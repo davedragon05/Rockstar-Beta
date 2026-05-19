@@ -107,6 +107,14 @@
         setTimeout(function () { r.remove() }, 600)
       })
     })
+
+    /* Keyboard shortcut: Ctrl+B toggles dark mode */
+    document.addEventListener('keydown', function (e) {
+      if (e.ctrlKey && (e.key === 'b' || e.key === 'B')) {
+        e.preventDefault()
+        toggleUnauthTheme()
+      }
+    })
   })()
 </script>
 {% endblock %}

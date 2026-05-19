@@ -83,10 +83,10 @@
             </button>
           </div>
           <div id="strength-meter" class="flex gap-1 mt-0.5">
-            <div class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-600 transition-colors duration-300" id="str-1"></div>
-            <div class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-600 transition-colors duration-300" id="str-2"></div>
-            <div class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-600 transition-colors duration-300" id="str-3"></div>
-            <div class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-600 transition-colors duration-300" id="str-4"></div>
+            <div class="h-1 flex-1 rounded-full  dark:bg-gray-600 transition-colors duration-300" id="str-1"></div>
+            <div class="h-1 flex-1 rounded-full  dark:bg-gray-600 transition-colors duration-300" id="str-2"></div>
+            <div class="h-1 flex-1 rounded-full  dark:bg-gray-600 transition-colors duration-300" id="str-3"></div>
+            <div class="h-1 flex-1 rounded-full  dark:bg-gray-600 transition-colors duration-300" id="str-4"></div>
           </div>
         </div>
         </div>
@@ -125,7 +125,7 @@
       <div id="hint-section" class="mt-6 animate-fade-in-delay">
         <div class="flex items-center justify-center gap-2 mb-2">
           <button id="hint-toggle-btn" type="button" onclick="toggleHint()" class="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-1 focus:ring-orange-400 rounded-full px-2 py-0.5 transition-colors duration-200 flex items-center gap-1" aria-expanded="false" aria-controls="hint-box" aria-label="Show/hide system owner login hint">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3.5 h-3.5">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
             </svg>Show system owner login info
           </button>
@@ -376,6 +376,14 @@
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && !hintBox.classList.contains('hidden')) {
           toggleHint()
+        }
+      })
+
+      /* Keyboard shortcut: Ctrl+B toggles dark mode */
+      document.addEventListener('keydown', function (e) {
+        if (e.ctrlKey && (e.key === 'b' || e.key === 'B')) {
+          e.preventDefault()
+          toggleTheme()
         }
       })
     })()

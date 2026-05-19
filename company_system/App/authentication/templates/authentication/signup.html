@@ -36,22 +36,20 @@
         </div>
       {% endif %}
 
-      <form method="post" class="space-y-5" aria-label="Sign up form" novalidate>
+      <form method="post" class="space-y-1.5" aria-label="Sign up form" novalidate>
         {% csrf_token %}
 
         <!-- Employee Number with icon input -->
-        <div class="group">
+        <div class="space-y-1.5">
+          <label for="signup-employee-number" id="label-signup-employee" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Employee Number</label>
           <div class="relative">
-            <span id="emp-icon" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none transition-colors duration-300 group-focus-within:text-orange-500">
+            <span id="signup-emp-icon" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none transition-colors duration-300 focus-within:text-orange-500">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
               </svg>
             </span>
-            <input type="text" name="employee_number" id="signup-employee-number" placeholder=" "
-              class="peer w-full pl-10 pr-4 pt-5 pb-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none transition-all duration-300 hover:border-gray-400 hover:shadow-sm focus:shadow-[0_0_0_4px_rgba(251,146,60,0.15)]"
-              autocomplete="off" aria-describedby="employee_number-desc" />
-            <span id="employee_number-desc" class="sr-only">Enter your employee number in the format Emp-XXXX-XXXX</span>
-            <label for="signup-employee-number" class="field-float-label absolute left-[42px] top-2.5 text-xs text-orange-500 font-medium pointer-events-none">Employee Number</label>
+            <input id="signup-employee-number" name="employee_number" type="text" class="peer w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none transition-all duration-300 hover:border-gray-400 hover:shadow-sm focus:shadow-[0_0_0_4px_rgba(251,146,60,0.15)]" autocomplete="off" aria-describedby="signup-employee_number-desc" placeholder="Enter your employee number">
+            <span id="signup-employee_number-desc" class="sr-only">Enter your employee number in the format Emp-XXXX-XXXX</span>
           </div>
           {% if form.employee_number.errors %}
             <p class="text-red-500 text-xs mt-1.5 animate-shake" role="alert">{{ form.employee_number.errors.0 }}</p>
@@ -59,18 +57,16 @@
         </div>
 
         <!-- Email with icon input -->
-        <div class="group">
+        <div class="space-y-1.5">
+          <label for="signup-email" id="label-signup-email" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Email Address</label>
           <div class="relative">
-            <span id="email-icon" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none transition-colors duration-300 group-focus-within:text-orange-500">
+            <span id="signup-email-icon" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none transition-colors duration-300 focus-within:text-orange-500">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
               </svg>
             </span>
-            <input type="email" name="email" id="signup-email" placeholder=" "
-              class="peer w-full pl-10 pr-4 pt-5 pb-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none transition-all duration-300 hover:border-gray-400 hover:shadow-sm focus:shadow-[0_0_0_4px_rgba(251,146,60,0.15)]"
-              autocomplete="email" aria-describedby="email-desc" />
+            <input id="signup-email" name="email" type="email" class="peer w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none transition-all duration-300 hover:border-gray-400 hover:shadow-sm focus:shadow-[0_0_0_4px_rgba(251,146,60,0.15)]" autocomplete="email" aria-describedby="email-desc" placeholder="example@email.com">
             <span id="email-desc" class="sr-only">Enter your email address</span>
-            <label for="signup-email" class="field-float-label absolute left-[42px] top-2.5 text-xs text-orange-500 font-medium pointer-events-none">Email Address</label>
           </div>
           {% if form.email.errors %}
             <p class="text-red-500 text-xs mt-1.5 animate-shake" role="alert">{{ form.email.errors.0 }}</p>
@@ -79,19 +75,16 @@
 
         <!-- Password with icon input + strength meter -->
         <div class="space-y-1.5">
+          <label for="signup-password" id="label-signup-password" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Password</label>
           <div class="relative">
-            <span id="pw-icon" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none transition-colors duration-300 group-focus-within:text-orange-500">
+            <span id="pw-icon" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none transition-colors duration-300 focus-within:text-orange-500">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m3.75 0l-3.75-3.75M16.5 10.5h3.75m-3.75 0l-3.75 3.75M7.5 16.5h9" />
               </svg>
             </span>
-            <input type="password" name="password" id="signup-password" placeholder=" "
-              class="peer w-full pl-10 pr-11 pt-5 pb-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none transition-all duration-300 hover:border-gray-400 hover:shadow-sm focus:shadow-[0_0_0_4px_rgba(251,146,60,0.15)]"
-              autocomplete="new-password"
-              oninput="updateSignupStrength(this.value)" aria-describedby="password-desc" />
-            <span id="password-desc" class="sr-only">Enter your password</span>
-            <label for="signup-password" class="field-float-label absolute left-[42px] top-2.5 text-xs text-orange-500 font-medium pointer-events-none">Password</label>
-            <button type="button" onclick="togglePassword('signup-password')" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:ring-offset-1 rounded p-0.5 transition-colors duration-200" aria-label="Toggle password visibility" aria-pressed="false">
+            <input id="signup-password" name="password" type="password" class="peer w-full pl-10 pr-11 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none transition-all duration-300 hover:border-gray-400 hover:shadow-sm focus:shadow-[0_0_0_4px_rgba(251,146,60,0.15)]" autocomplete="new-password" oninput="updateSignupStrength(this.value)" aria-describedby="signup-password-desc" placeholder="Enter password">
+            <span id="signup-password-desc" class="sr-only">Enter your password</span>
+            <button type="button" id="signup-password-toggle-btn" onclick="togglePassword('signup-password')" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:ring-offset-1 rounded p-0.5 transition-colors duration-200 z-10" aria-label="Toggle password visibility" aria-pressed="false">
               <svg id="signup-password-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -100,11 +93,11 @@
           </div>
 
           <!-- 4-level strength bar -->
-          <div id="strength-meter" class="flex gap-1 mt-1.5 px-0.5">
-            <div class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-600 transition-colors duration-300" id="signup-str-1"></div>
-            <div class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-600 transition-colors duration-300" id="signup-str-2"></div>
-            <div class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-600 transition-colors duration-300" id="signup-str-3"></div>
-            <div class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-600 transition-colors duration-300" id="signup-str-4"></div>
+          <div id="strength-meter" class="flex gap-1 mt-0.5">
+            <div class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-600 transition-colors duration-300" id="str-1"></div>
+            <div class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-600 transition-colors duration-300" id="str-2"></div>
+            <div class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-600 transition-colors duration-300" id="str-3"></div>
+            <div class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-600 transition-colors duration-300" id="str-4"></div>
           </div>
           <p id="strength-text" class="text-xs mt-0.5 text-gray-500 dark:text-gray-400 transition-colors duration-300" aria-live="polite"></p>
 
@@ -125,18 +118,16 @@
         {% endif %}
 
         <!-- Confirm Password -->
-        <div class="group">
+        <div class="space-y-1.5">
+          <label for="signup-confirm-password" id="label-signup-confirm-password" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Confirm Password</label>
           <div class="relative">
-            <span id="confirm-pw-icon" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none transition-colors duration-300 group-focus-within:text-orange-500">
+            <span id="confirm-pw-icon" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none transition-colors duration-300 focus-within:text-orange-500">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m3.75 0l-3.75-3.75M16.5 10.5h3.75m-3.75 0l-3.75 3.75M7.5 16.5h9" />
               </svg>
             </span>
-            <input type="password" name="confirm_password" id="signup-confirm-password" placeholder=" "
-              class="peer w-full pl-10 pr-11 pt-5 pb-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none transition-all duration-300 hover:border-gray-400 hover:shadow-sm focus:shadow-[0_0_0_4px_rgba(251,146,60,0.15)]"
-              autocomplete="new-password" />
-            <label for="signup-confirm-password" class="field-float-label absolute left-[42px] top-2.5 text-xs text-orange-500 font-medium pointer-events-none">Confirm Password</label>
-            <button type="button" onclick="togglePassword('signup-confirm-password')" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:ring-offset-1 rounded p-0.5 transition-colors duration-200" aria-label="Toggle confirm password visibility" aria-pressed="false">
+            <input id="signup-confirm-password" name="confirm_password" type="password" class="peer w-full pl-10 pr-11 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none transition-all duration-300 hover:border-gray-400 hover:shadow-sm focus:shadow-[0_0_0_4px_rgba(251,146,60,0.15)]" autocomplete="new-password" placeholder="Confirm password">
+            <button type="button" id="signup-confirm-password-toggle-btn" onclick="togglePassword('signup-confirm-password')" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:ring-offset-1 rounded p-0.5 transition-colors duration-200 z-10" aria-label="Toggle confirm password visibility" aria-pressed="false">
               <svg id="signup-confirm-password-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -360,7 +351,7 @@
       if (/[\d!@#$%^&*(),.?":{}|<>]/.test(val))  score++
 
       for (var n = 1; n <= 4; n++) {
-        var bar = document.getElementById('signup-str-' + n)
+        var bar = document.getElementById('str-' + n)
         if (!bar) continue
         if (n <= score && val.length > 0) {
           bar.style.backgroundColor = colors[Math.min(score - 1, 3)]
@@ -422,6 +413,14 @@
     document.querySelectorAll('#signup-card input[placeholder=" "]').forEach(function (inp) {
       if (inp.value) inp.classList.add('not-placeholder-shown')
     })
+  })
+
+  /* Keyboard shortcut: Ctrl+B toggles dark mode */
+  document.addEventListener('keydown', function (e) {
+    if (e.ctrlKey && (e.key === 'b' || e.key === 'B')) {
+      e.preventDefault()
+      toggleTheme()
+    }
   })
 </script>
 {% endblock %}
