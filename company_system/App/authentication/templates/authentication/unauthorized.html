@@ -1,31 +1,112 @@
 {% extends "base.html" %}
 
-{% block title %} Unauthentication {% endblock %}
+{% block title %} Access Denied {% endblock %}
 
 {% block content %}
+  <div id="unauth-container" class="min-h-screen flex items-center justify-center relative overflow-hidden px-4 transition-colors duration-500" role="main" aria-label="Access denied page">
+    <!-- Animated mesh gradient background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-red-50 via-white to-orange-50 animate-gradient transition-all duration-500 -z-10" id="unauth-bg-gradient"></div>
+    <!-- Floating decorative elements -->
+    <div class="absolute top-20 left-10 w-24 h-24 rounded-full bg-red-400/20 blur-3xl animate-float-slow transition-all duration-500 -z-10" id="unauth-deco-1"></div>
+    <div class="absolute bottom-24 right-16 w-32 h-32 rounded-full bg-orange-300/20 blur-3xl animate-float-delay transition-all duration-500 -z-10" id="unauth-deco-2"></div>
 
-<div class="flex items-center justify-center min-h-screen bg-gray-100">
-    <div class="bg-white shadow-lg rounded-xl p-8 max-w-md text-center">
+    <!-- Dark Mode Toggle -->
+    <button id="theme-toggle" onclick="toggleUnauthTheme()" class="absolute top-4 right-4 p-2.5 rounded-full bg-white/70 dark:bg-white/10 backdrop-blur shadow-sm hover:bg-white hover:shadow-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-400/60 focus:ring-offset-2 z-10" type="button" aria-label="Toggle dark mode" aria-pressed="false">
+      <span id="theme-icon" class="text-xl block transition-transform duration-500 hover:rotate-12" aria-hidden="true">🌙</span>
+    </button>
 
-        <h2 class="text-3xl font-bold text-red-600 mb-4">Access Denied</h2>
+    <div id="unauth-card" class="max-w-md w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-8 md:p-10 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 animate-fade-up border border-gray-200/50 dark:border-gray-700/50">
+      <!-- Locked / Access Denied Icon -->
+      <div class="flex justify-center mb-8 animate-scale-in">
+        <div class="w-20 h-20 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center drop-shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 text-red-600 dark:text-red-400">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m3.75 0l-3.75-3.75m0 0L8.25 10.5h7.5a1.5 1.5 0 011.5 1.5v6a1.5 1.5 0 01-1.5 1.5h-7.5a1.5 1.5 0 01-1.5-1.5v-6a1.5 1.5 0 011.5-1.5z" />
+          </svg>
+        </div>
+      </div>
 
-        <p class="text-gray-700 mb-6">
-            You do not have permission to access this page.
-            Please contact your administrator if you believe this is a mistake.
-        </p>
+      <h2 id="unauth-title" class="text-3xl font-bold text-center mb-4 text-red-600 dark:text-red-400 transition-colors duration-300">Access Denied</h2>
 
-        <a href="{% url 'login' %}"
-           class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
-           Return to Login
-        </a>
+      <p id="unauth-desc" class="text-gray-700 dark:text-gray-300 mb-8 text-center transition-colors duration-300">
+        You do not have permission to access this page.
+        Please contact your administrator if you believe this is a mistake.
+      </p>
+
+      <a href="{% url 'login' %}"
+        class="relative overflow-hidden inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-3 rounded-xl shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 hover:-translate-y-0.5 active:translate-y-0 active:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500/60 focus:ring-offset-2" role="button">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+        </svg>
+        Return to Login
+        <span class="ripple absolute inset-0 pointer-events-none"></span>
+      </a>
 
     </div>
-</div>
-
+  </div>
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
-    console.log("This page has custom JS");
+  ;(function () {
+    'use strict'
+
+    if (!document.getElementById('unauth-styles')) {
+      var s = document.createElement('style')
+      s.id = 'unauth-styles'
+      s.textContent = ['@keyframes rippleAnim{to{transform:scale(2.4);opacity:0}}', '@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}', '@keyframes scaleIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}', '@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}', '@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}', '.animate-fade-up{animation:fadeUp .6s ease-out both}', '.animate-scale-in{animation:scaleIn .5s ease-out both}', '.animate-gradient{background-size:200% 200%!important;animation:gradientShift 8s ease-in-out infinite}', '.animate-float-slow{animation:float 7s ease-in-out infinite}', '.animate-float-delay{animation:float 9s ease-in-out infinite 2s}', '.animate-fade-in-delay{animation:fadeUp .6s ease-out .2s both}', 'html,body{transition:background-color .5s ease,color .5s ease}'].join('\n')
+      document.head.appendChild(s)
+    }
+
+    var isDark = false
+
+    var unauthThemeMap = {
+      dark:  { gradient:'linear-gradient(135deg,#111827,#1f2937,#0f172a)', titleColor:'#f3f4f6', iconText:'🌞', decoColor:'rgba(229,62,62,.15)',  descColor:'#d1d5db' },
+      light: { gradient:'linear-gradient(135deg,#fef2f2,#fff,#fff7ed)', titleColor:'#374151', iconText:'🌙', decoColor:'rgba(229,62,62,.2)',  descColor:'#374151' }
+    }
+
+    function applyUnauthTheme(dark) {
+      var p    = dark ? unauthThemeMap.dark : unauthThemeMap.light
+      var grad = document.getElementById('unauth-bg-gradient')
+      var tit  = document.getElementById('unauth-title')
+      var icon = document.getElementById('theme-icon')
+      var desc = document.getElementById('unauth-desc')
+      grad.style.background = p.gradient
+      tit.style.color       = p.titleColor
+      desc.style.color      = p.descColor
+      icon.textContent       = p.iconText
+      ;['unauth-deco-1','unauth-deco-2'].forEach(function (id) {
+        var el = document.getElementById(id)
+        if (el) el.style.backgroundColor = p.decoColor
+      })
+      isDark = dark
+      localStorage.setItem('theme', dark ? 'dark' : 'light')
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
+    }
+
+    window.toggleUnauthTheme = function () {
+      var icon = document.getElementById('theme-icon')
+      icon.style.transform = 'rotate(360deg)'
+      setTimeout(function () { icon.style.transform = '' }, 600)
+      applyUnauthTheme(!isDark)
+    }
+
+    ;(function init() {
+      var saved    = localStorage.getItem('theme')
+      var prefDark  = window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches
+      if (saved === 'dark' || (!saved && prefDark)) applyUnauthTheme(true)
+    })()
+
+    /* Ripple on return-to-login link/button */
+    document.querySelectorAll('#unauth-card a').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        var rect = this.getBoundingClientRect()
+        var size = Math.max(rect.width, rect.height)
+        var r = document.createElement('span')
+        r.style.cssText = 'position:absolute;border-radius:50%;background:rgba(255,255,255,.25);width:' + size + 'px;height:' + size + 'px;left:' + (e.clientX - rect.left - size / 2) + 'px;top:' + (e.clientY - rect.top - size / 2) + 'px;transform:scale(0);animation:rippleAnim .5s linear forwards;pointer-events:none;z-index:0;'
+        this.appendChild(r)
+        setTimeout(function () { r.remove() }, 600)
+      })
+    })
+  })()
 </script>
 {% endblock %}

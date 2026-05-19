@@ -1,228 +1,383 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
-{% block title %} Login {% endblock %}
+{% block title %}
+  Login
+{% endblock %}
 
 {% block content %}
+  <div id="login-container" class="min-h-screen flex items-center justify-center relative overflow-hidden px-4 transition-colors duration-500" role="main" aria-label="Login page">
+    <!-- Animated mesh gradient background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-gray-100 via-white to-gray-200 animate-gradient transition-all duration-500 -z-10" id="bg-gradient"></div>
+    <!-- Floating decorative elements -->
+    <div class="absolute top-20 left-10 w-24 h-24 rounded-full bg-orange-400/20 blur-3xl animate-float-slow transition-all duration-500 -z-10" id="deco-1"></div>
+    <div class="absolute bottom-24 right-16 w-32 h-32 rounded-full bg-orange-300/20 blur-3xl animate-float-delay transition-all duration-500 -z-10" id="deco-2"></div>
+    <div class="absolute top-1/3 right-8 w-16 h-16 rounded-full bg-gray-400/20 blur-2xl animate-float-medium transition-all duration-500 -z-10" id="deco-3"></div>
 
-<div id="login-container" class="min-h-screen flex items-center justify-center bg-gray-100 px-4" role="main" aria-label="Login page">
     <!-- Dark Mode Toggle -->
-    <button id="theme-toggle" onclick="toggleTheme()" class="absolute top-4 right-4 p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2" aria-label="Toggle dark mode" type="button">
-        <span id="theme-icon" class="text-xl" aria-hidden="true">🌙</span>
-    </button>
-    <div id="login-card" class="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
-        <!-- Logo Placeholder -->
-        <div class="flex justify-center mb-6">
-            <img src="{% static 'img/Rockstar.png' %}" alt="Logo" class="h-16 w-16">
+    <button id="theme-toggle" onclick="toggleTheme()" class="absolute top-4 right-4 p-2.5 rounded-full bg-white/70 dark:bg-white/10 backdrop-blur shadow-sm hover:bg-white hover:shadow-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-400/60 focus:ring-offset-2 z-10" aria-label="Toggle dark mode" type="button"><span id="theme-icon" class="text-xl block transition-transform duration-500 hover:rotate-12" aria-hidden="true">🌙</span></button>
+
+    <div id="login-card" class="max-w-md w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-8 md:p-10 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 animate-fade-up border border-gray-200/50 dark:border-gray-700/50">
+      <!-- Logo Placeholder -->
+      <div class="flex justify-center mb-8 animate-scale-in">
+        <img src="{% static 'img/Rockstar.png' %}" alt="Rockstar Logo" class="h-16 w-16 drop-shadow-md"></img>
+      </div>
+
+      <h2 id="login-title" class="text-2xl font-bold text-center mb-8 text-gray-900 dark:text-white transition-colors duration-300">Login to Your Account</h2>
+
+      {% if messages %}
+        <div aria-live="polite" aria-atomic="true" class="mb-2">
+          {% for message in messages %}
+            <div class="text-sm {{ message.tags }} text-center" role="alert">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <form method="post" class="space-y-5" aria-label="Login form" novalidate>
+        {% csrf_token %}
+
+        <!-- Employee Number with icon input -->
+        <div class="space-y-1.5">
+          <label for="employee_number" id="label-employee" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Employee Number</label>
+          <div class="relative">
+            <span id="emp-icon" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none transition-colors duration-300 focus-within:text-orange-500">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+              </svg>
+            </span>
+            <input type="text" name="employee_number" id="employee_number" placeholder="Enter your employee number" autocomplete="off" class="peer w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none transition-all duration-300 hover:border-gray-400 hover:shadow-sm focus:shadow-[0_0_0_4px_rgba(251,146,60,0.15)]" aria-describedby="employee_number-desc" />
+            <span id="employee_number-desc" class="sr-only">Enter your employee number in the format Emp-XXXX-XXXX</span>
         </div>
 
-        <h2 id="login-title" class="text-2xl font-bold text-center mb-6">Login to Your Account</h2>
+        <!-- Email with icon input -->
+        <div class="space-y-1.5">
+          <label for="email" id="label-email" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Email Address</label>
+          <div class="relative">
+            <span id="email-icon" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none transition-colors duration-300 focus-within:text-orange-500">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+              </svg>
+            </span>
+            <input type="email" name="email" id="email" placeholder="example@email.com" class="peer w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none transition-all duration-300 hover:border-gray-400 hover:shadow-sm focus:shadow-[0_0_0_4px_rgba(251,146,60,0.15)]" aria-describedby="email-desc" />
+            <span id="email-desc" class="sr-only">Enter your email address</span>
+          </div>
+        </div>
 
-        {% if messages %}
-            <div aria-live="polite" aria-atomic="true" class="mb-2">
-                {% for message in messages %}
-                    <div class="text-sm {{ message.tags }} text-center" role="alert">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-
-        <form method="post" class="space-y-4" aria-label="Login form">
-            {% csrf_token %}
-            <div>
-                <label for="employee_number" id="label-employee" class="block text-sm font-medium mb-1">Employee Number</label>
-                <input type="text" name="employee_number" id="employee_number" placeholder="EMP-XXXX-XXXX" required
-                    class="w-full p-2 border rounded focus:ring-2 focus:ring-orange-400 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" aria-describedby="employee_number-desc">
-                <span id="employee_number-desc" class="sr-only">Enter your employee number in the format EMP-XXXX-XXXX</span>
-            </div>
-            <div>
-                <label for="email" id="label-email" class="block text-sm font-medium mb-1">Email Address</label>
-                <input type="email" name="email" id="email" placeholder="example@email.com" required
-                    class="w-full p-2 border rounded focus:ring-2 focus:ring-orange-400 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" aria-describedby="email-desc">
-                <span id="email-desc" class="sr-only">Enter your email address</span>
-            </div>
-            <div>
-                <label for="password" id="label-password" class="block text-sm font-medium mb-1">Password</label>
-                <div class="relative">
-                    <input type="password" name="password" id="password" placeholder="Enter password" required
-                        class="w-full px-3 py-2.5 pr-10 border rounded focus:ring-2 focus:ring-orange-400 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" aria-describedby="password-desc">
-                    <span id="password-desc" class="sr-only">Enter your password</span>
-                    <button type="button" onclick="togglePassword('password')" class="absolute right-2 top-0 bottom-0 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 rounded"
-                        aria-label="Toggle password visibility" aria-pressed="false">
-                        <svg id="password-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <div class="flex items-center">
-                <input type="checkbox" name="remember_me" id="remember_me"
-                    class="h-4 w-4 text-orange-500 border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
-                <label for="remember_me" id="label-remember" class="ml-2 text-sm text-gray-600">Remember me</label>
-            </div>
-
-            <button type="submit" id="login-btn" class="w-full bg-orange-500 text-white py-2 rounded hover:bg-orange-600 transition focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
-                <span id="login-btn-text">Login</span>
-                <svg id="login-btn-spinner" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="hidden animate-spin h-5 w-5 ml-2">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
+        <!-- Password with icon input + strength meter -->
+        <div class="space-y-1.5">
+          <label for="password" id="label-password" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Password</label>
+          <div class="relative">
+            <span id="pw-icon" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none transition-colors duration-300 focus-within:text-orange-500">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m3.75 0l-3.75-3.75M16.5 10.5h3.75m-3.75 0l-3.75 3.75M7.5 16.5h9" />
+              </svg>
+            </span>
+            <input type="password" name="password" id="password" placeholder="Enter password"
+              class="peer w-full pl-10 pr-11 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none transition-all duration-300 hover:border-gray-400 hover:shadow-sm focus:shadow-[0_0_0_4px_rgba(251,146,60,0.15)]"
+              aria-describedby="password-desc" oninput="updateStrengthMeter(this.value)" />
+            <span id="password-desc" class="sr-only">Enter your password</span>
+            <button type="button" onclick="togglePassword('password')" id="password-toggle-btn" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:ring-offset-1 rounded p-0.5 transition-colors duration-200 z-10" aria-label="Toggle password visibility" aria-pressed="false">
+              <svg id="password-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
             </button>
-        </form>
-
-        <p id="login-link" class="mt-4 text-center text-sm">
-            Don't have an account? <a href="{% url 'signup' %}" class="text-orange-500 font-semibold hover:underline focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 rounded px-1">Sign Up</a>
-        </p>
-        
-        <!-- Owner Login Hint -->
-        <div id="login-hint" class="mt-4 p-3 bg-gray-50 border border-gray-200 rounded text-xs text-gray-500 text-center">
-            <p>For system owner/developer login:</p>
-            <p class="font-mono mt-1">Employee #: <strong>OWNER</strong></p>
-            <p class="font-mono">Password: <strong>owner123</strong></p>
+          </div>
+          <div id="strength-meter" class="flex gap-1 mt-0.5">
+            <div class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-600 transition-colors duration-300" id="str-1"></div>
+            <div class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-600 transition-colors duration-300" id="str-2"></div>
+            <div class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-600 transition-colors duration-300" id="str-3"></div>
+            <div class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-600 transition-colors duration-300" id="str-4"></div>
+          </div>
         </div>
-    </div>
-</div>
+        </div>
 
+        <!-- Remember Me -->
+        <div class="flex items-center gap-2.5 py-0.5">
+          <input type="checkbox" name="remember_me" id="remember_me" class="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-orange-500 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-1 bg-white dark:bg-gray-700 cursor-pointer accent-orange-500" />
+          <label for="remember_me" id="label-remember" class="text-sm text-gray-600 dark:text-gray-300 cursor-pointer transition-colors duration-300">Remember me</label>
+        </div>
+
+        <!-- Login Button -->
+        <button type="submit" id="login-btn" class="w-full relative overflow-hidden bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white py-3 rounded-xl font-semibold tracking-wide shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 hover:-translate-y-0.5 active:translate-y-0 active:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500/60 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-lg flex items-center justify-center gap-2">
+          <svg id="login-btn-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+          </svg>
+          <span id="login-btn-text">Login</span>
+          <svg id="login-btn-spinner" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="hidden animate-spin h-5 w-5" aria-hidden="true">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <!-- Loading skeleton overlay -->
+          <div id="login-skeleton" class="absolute inset-0 hidden rounded-xl overflow-hidden pointer-events-none border border-gray-300/30">
+            <div class="loading-skeleton-shimmer h-full w-full"></div>
+          </div>
+        </button>
+      </form>
+
+      <!-- Messages container -->
+      <div id="message-container" class="mt-4 space-y-2"></div>
+
+      <p id="login-link" class="mt-5 text-center text-sm text-gray-600 dark:text-gray-300 transition-colors duration-300 animate-fade-in-delay">
+        Don't have an account? <a href="{% url 'signup' %}" class="text-orange-500 font-semibold hover:underline focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:ring-offset-1 rounded px-1 transition-colors duration-200">Sign Up</a>
+      </p>
+
+      <!-- Owner Login Hint — collapsible, hidden by default -->
+      <div id="hint-section" class="mt-6 animate-fade-in-delay">
+        <div class="flex items-center justify-center gap-2 mb-2">
+          <button id="hint-toggle-btn" type="button" onclick="toggleHint()" class="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-1 focus:ring-orange-400 rounded-full px-2 py-0.5 transition-colors duration-200 flex items-center gap-1" aria-expanded="false" aria-controls="hint-box" aria-label="Show/hide system owner login hint">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3.5 h-3.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+            </svg>Show system owner login info
+          </button>
+        </div>
+        <div id="hint-box" class="hidden overflow-hidden">
+          <div id="login-hint" class="p-3.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl text-xs text-gray-500 dark:text-gray-400 text-center transition-colors duration-300">
+            <p class="mb-1.5 font-medium text-gray-700 dark:text-gray-300">For system owner / developer login</p>
+            <p class="font-mono mt-1">
+              Employee : <strong class="text-orange-600 dark:text-orange-400">OWNER</strong>
+            </p>
+            <p class="font-mono">
+              Password : <strong class="text-orange-600 dark:text-orange-400">owner123</strong>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
 
 {% block extra_scripts %}
-<script>
-    // Dark colors
-    const darkBg = '#111827';
-    const darkCard = '#1f2937';
-    const darkText = '#f3f4f6';
-    const darkMuted = '#9ca3af';
-    const darkInputBg = '#374151';
-    const darkInputBorder = '#4b5563';
+  <script>
+    ;(function () {
+      'use strict'
     
-    // Light colors
-    const lightBg = '#f3f4f6';
-    const lightCard = '#ffffff';
-    const lightText = '#1f2937';
-    const lightMuted = '#6b7280';
-    const lightInputBg = '#ffffff';
-    const lightInputBorder = '#d1d5db';
+      /* ─── Inject CSS keyframes once ─────────────────────────────────────── */
+      if (!document.getElementById('login-styles')) {
+        var s = document.createElement('style')
+        s.id = 'login-styles'
+        s.textContent = ['@keyframes rippleAnim{to{transform:scale(2.4);opacity:0}}', '@keyframes skeleton-shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}', '.loading-skeleton-shimmer{background:linear-gradient(90deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.15) 50%,rgba(255,255,255,0) 100%);background-size:400px 100%;animation:skeleton-shimmer 1.5s ease-in-out infinite}', '@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}', '@keyframes scaleIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}', '@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}', '@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}', '.animate-fade-up{animation:fadeUp .6s ease-out both}', '.animate-scale-in{animation:scaleIn .5s ease-out both}', '.animate-gradient{background-size:200% 200%!important;animation:gradientShift 8s ease-in-out infinite}', '.animate-float-slow{animation:float 7s ease-in-out infinite}', '.animate-float-medium{animation:float 5s ease-in-out infinite 1s}', '.animate-float-delay{animation:float 9s ease-in-out infinite 2s}', '.animate-fade-in-delay{animation:fadeUp .6s ease-out .2s both}', 'html,body{transition:background-color .5s ease,color .5s ease}'].join('\n')
+        document.head.appendChild(s)
+      }
     
-    // Loading state handler
-    const loginForm = document.querySelector('form');
-    const loginBtn = document.getElementById('login-btn');
-    const loginBtnText = document.getElementById('login-btn-text');
-    const loginBtnSpinner = document.getElementById('login-btn-spinner');
+      /* ─── Theme ──────────────────────────────────────────────────────────── */
+      var isDark = false
     
-    loginForm.addEventListener('submit', function() {
-        // Show loading state
-        loginBtn.disabled = true;
-        loginBtnText.textContent = 'Logging in...';
-        loginBtnSpinner.classList.remove('hidden');
-        
-        // Re-enable after 10 seconds as fallback
-        setTimeout(function() {
-            loginBtn.disabled = false;
-            loginBtnText.textContent = 'Login';
-            loginBtnSpinner.classList.add('hidden');
-        }, 10000);
-    });
+      var themeMap = {
+        dark: {
+          gradient: 'linear-gradient(135deg,#111827,#1f2937,#0f172a)',
+          titleColor: '#f3f4f6',
+          iconText: '🌞',
+          inputBg: '#374151',
+          inputBorder: '#4b5563',
+          inputColor: '#f3f4f6',
+          hintBg: 'rgba(55,65,81,.5)',
+          hintBorder: '#4b5563',
+          hintColor: '#9ca3af',
+          decoColor: 'rgba(251,146,60,.15)',
+          rememberColor: '#9ca3af'
+        },
+        light: {
+          gradient: 'linear-gradient(135deg,#f3f4f6,#ffffff,#e5e7eb)',
+          titleColor: '#1f1f1f',
+          iconText: '🌙',
+          inputBg: '#ffffff',
+          inputBorder: '#d1d5db',
+          inputColor: '#1f1f1f',
+          hintBg: '#f9fafb',
+          hintBorder: '#e5e7eb',
+          hintColor: '#6b7280',
+          decoColor: 'rgba(251,146,60,.2)',
+          rememberColor: '#4b5563'
+        }
+      }
     
-    let isDark = false;
-
-    function togglePassword(fieldId) {
-        const field = document.getElementById(fieldId);
-        const icon = document.getElementById(fieldId + '-icon');
-        const button = field.nextElementSibling;
-        const eyePath = '<path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />';
-        const eyeSlashPath = '<path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />';
-        
+      function applyTheme(dark) {
+        var p = dark ? themeMap.dark : themeMap.light
+    
+        document.getElementById('bg-gradient').style.background = p.gradient
+        document.getElementById('login-title').style.color = p.titleColor
+        document.getElementById('theme-icon').textContent = p.iconText
+    
+        var hint = document.getElementById('login-hint')
+        hint.style.backgroundColor = p.hintBg
+        hint.style.borderColor = p.hintBorder
+        hint.style.color = p.hintColor
+    
+        ;['deco-1', 'deco-2', 'deco-3'].forEach(function (id) {
+          document.getElementById(id).style.backgroundColor = p.decoColor
+        })
+    
+        /* Style all text/email/password inputs (not checkbox) */
+        document.querySelectorAll('#login-card input:not([type=checkbox])').forEach(function (inp) {
+          inp.style.backgroundColor = p.inputBg
+          inp.style.borderColor = p.inputBorder
+          inp.style.color = p.inputColor
+        })
+    
+        /* Remember-me label */
+        var remLabel = document.getElementById('label-remember')
+        if (remLabel) {
+          remLabel.style.color = p.rememberColor
+        }
+    
+        isDark = dark
+        localStorage.setItem('theme', dark ? 'dark' : 'light')
+        document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
+      }
+    
+      window.toggleTheme = function () {
+        var icon = document.getElementById('theme-icon')
+        icon.style.transform = 'rotate(360deg)'
+        setTimeout(function () {
+          icon.style.transform = ''
+        }, 600)
+        applyTheme(!isDark)
+      }
+    
+      /* Initialise from saved preference or system preference */
+      ;(function initTheme() {
+        var saved = localStorage.getItem('theme')
+        var preferDark = window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches
+        if (saved === 'dark' || (!saved && preferDark)) {
+          applyTheme(true)
+        }
+      })()
+    
+      /* ─── Password visibility toggle ─────────────────────────────────────
+           FIX: Look up the SVG by its actual id ("password-icon-svg") and
+                look up the toggle button by its actual id ("password-toggle-btn").
+                No longer traverses siblings, which was fragile.                 */
+      window.togglePassword = function (fieldId) {
+        var field = document.getElementById(fieldId)
+        var svgEl = document.getElementById(fieldId + '-icon-svg')
+        var btn = document.getElementById(fieldId + '-toggle-btn')
+        if (!field || !svgEl || !btn) {
+          return
+        }
+    
+        var EYE = '<path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>'
+        var SLASH = '<path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"/>'
+    
         if (field.type === 'password') {
-            field.type = 'text';
-            icon.innerHTML = eyeSlashPath;
-            button.setAttribute('aria-pressed', 'true');
+          field.type = 'text'
+          svgEl.innerHTML = SLASH
+          btn.setAttribute('aria-pressed', 'true')
         } else {
-            field.type = 'password';
-            icon.innerHTML = eyePath;
-            button.setAttribute('aria-pressed', 'false');
+          field.type = 'password'
+          svgEl.innerHTML = EYE
+          btn.setAttribute('aria-pressed', 'false')
         }
-    }
-
-    function toggleTheme() {
-        const container = document.getElementById('login-container');
-        const card = document.getElementById('login-card');
-        const title = document.getElementById('login-title');
-        const icon = document.getElementById('theme-icon');
-        const hint = document.getElementById('login-hint');
-        
-        // Toggle inputs and labels
-        const inputs = document.querySelectorAll('input');
-        const labels = document.querySelectorAll('label');
-        
-        if (isDark) {
-            // Switch to light mode
-            container.style.backgroundColor = lightBg;
-            card.style.backgroundColor = lightCard;
-            card.style.color = lightText;
-            title.style.color = lightText;
-            hint.style.backgroundColor = '#f9fafb';
-            hint.style.borderColor = '#e5e7eb';
-            hint.style.color = '#6b7280';
-            icon.textContent = '🌙';
-            
-            inputs.forEach(input => {
-                if (input.type !== 'checkbox') {
-                    input.style.backgroundColor = lightInputBg;
-                    input.style.borderColor = lightInputBorder;
-                    input.style.color = lightText;
-                }
-            });
-            
-            labels.forEach(label => {
-                if (label.htmlFor !== 'remember_me') {
-                    label.style.color = lightText;
-                } else {
-                    label.style.color = lightMuted;
-                }
-            });
-            
-            isDark = false;
-            localStorage.setItem('theme', 'light');
+      }
+    
+      /* ─── Password strength meter ────────────────────────────────────────── */
+      window.updateStrengthMeter = function (val) {
+        var score = 0
+        if (val.length >= 4) {
+          score++
+        }
+        if (val.length >= 8) {
+          score++
+        }
+        if (/[A-Z]/.test(val) && /[a-z]/.test(val)) {
+          score++
+        }
+        if (/[\d!@#$%^&*(),.?":{}|<>]/.test(val)) {
+          score++
+        }
+        var colors = ['#ef4444', '#f97316', '#eab308', '#22c55e']
+        ;[1, 2, 3, 4].forEach(function (n) {
+          var bar = document.getElementById('str-' + n)
+          if (!bar) {
+            return
+          }
+          if (n <= score && val.length > 0) {
+            bar.style.backgroundColor = colors[score - 1]
+            bar.style.boxShadow = '0 0 8px ' + colors[score - 1] + '40'
+          } else {
+            bar.style.backgroundColor = ''
+            bar.style.boxShadow = ''
+          }
+        })
+      }
+    
+      /* ─── Form submit — loading state ───────────────────────────────────── */
+      var loginForm = document.querySelector('form[aria-label="Login form"]')
+      var loginBtn = document.getElementById('login-btn')
+      var loginBtnText = document.getElementById('login-btn-text')
+      var loginSpinner = document.getElementById('login-btn-spinner')
+      var loginSkeleton = document.getElementById('login-skeleton')
+      var loginBtnIcon = document.getElementById('login-btn-icon')
+      var submitTimer = null
+    
+      loginForm.addEventListener('submit', function () {
+        loginBtn.disabled = true
+        loginBtnText.textContent = 'Logging in…'
+        loginSpinner.classList.remove('hidden')
+        loginSkeleton.classList.remove('hidden')
+        if (loginBtnIcon) {
+          loginBtnIcon.classList.add('hidden')
+        }
+    
+        /* Safety reset after 10 s in case navigation doesn't happen */
+        submitTimer = setTimeout(function () {
+          loginBtn.disabled = false
+          loginBtnText.textContent = 'Login'
+          loginSpinner.classList.add('hidden')
+          loginSkeleton.classList.add('hidden')
+          if (loginBtnIcon) {
+            loginBtnIcon.classList.remove('hidden')
+          }
+        }, 10000)
+      })
+    
+      /* ─── Ripple effect on clickable buttons ────────────────────────────── */
+      document.querySelectorAll('#login-card button').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          var rect = this.getBoundingClientRect()
+          var size = Math.max(rect.width, rect.height)
+          var ripple = document.createElement('span')
+          ripple.style.cssText = 'position:absolute;border-radius:50%;background:rgba(255,255,255,.25);' + 'width:' + size + 'px;height:' + size + 'px;' + 'left:' + (e.clientX - rect.left - size / 2) + 'px;' + 'top:' + (e.clientY - rect.top - size / 2) + 'px;' + 'transform:scale(0);animation:rippleAnim .5s linear forwards;' + 'pointer-events:none;z-index:0;'
+          this.appendChild(ripple)
+          setTimeout(function () {
+            ripple.remove()
+          }, 600)
+        })
+      })
+    
+      /* ─── Hint box collapse / expand ────────────────────────────────────── */
+      var hintBox = document.getElementById('hint-box')
+      var hintBtn = document.getElementById('hint-toggle-btn')
+    
+      window.toggleHint = function () {
+        var expanded = hintBtn.getAttribute('aria-expanded') === 'true'
+        hintBtn.setAttribute('aria-expanded', String(!expanded))
+    
+        if (hintBox.classList.contains('hidden')) {
+          hintBox.classList.remove('hidden')
+          hintBox.style.transition = 'none'
+          hintBox.style.opacity = '0'
+          hintBox.style.maxHeight = '0'
+          /* Force reflow before animating */
+          hintBox.getBoundingClientRect()
+          hintBox.style.transition = 'opacity .3s ease, max-height .3s ease'
+          hintBox.style.opacity = '1'
+          hintBox.style.maxHeight = '200px'
         } else {
-            // Switch to dark mode
-            container.style.backgroundColor = darkBg;
-            card.style.backgroundColor = darkCard;
-            card.style.color = darkText;
-            title.style.color = darkText;
-            hint.style.backgroundColor = '#374151';
-            hint.style.borderColor = '#4b5563';
-            hint.style.color = '#9ca3af';
-            icon.textContent = '🌞';
-            
-            inputs.forEach(input => {
-                if (input.type !== 'checkbox') {
-                    input.style.backgroundColor = darkInputBg;
-                    input.style.borderColor = darkInputBorder;
-                    input.style.color = darkText;
-                }
-            });
-            
-            labels.forEach(label => {
-                if (label.htmlFor !== 'remember_me') {
-                    label.style.color = darkText;
-                } else {
-                    label.style.color = darkMuted;
-                }
-            });
-            
-            isDark = true;
-            localStorage.setItem('theme', 'dark');
+          hintBox.style.transition = 'opacity .2s ease, max-height .2s ease'
+          hintBox.style.opacity = '0'
+          hintBox.style.maxHeight = '0'
+          setTimeout(function () {
+            hintBox.classList.add('hidden')
+          }, 220)
         }
-    }
-
-    // Initialize theme on page load
-    (function initTheme() {
-        const savedTheme = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        
-        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-            toggleTheme();
+      }
+    
+      /* ESC closes hint box */
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !hintBox.classList.contains('hidden')) {
+          toggleHint()
         }
-    })();
-</script>
+      })
+    })()
+  </script>
 {% endblock %}

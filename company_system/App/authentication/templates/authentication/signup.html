@@ -3,131 +3,205 @@
 {% block title %} Sign Up {% endblock %}
 
 {% block content %}
+  <div id="signup-container" class="min-h-screen flex items-center justify-center relative overflow-hidden px-4 transition-colors duration-500" role="main" aria-label="Sign up page">
+    <!-- Animated mesh gradient background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-gray-100 via-white to-gray-200 animate-gradient transition-all duration-500 -z-10" id="signup-bg-gradient"></div>
+    <!-- Floating decorative elements -->
+    <div class="absolute top-20 left-10 w-24 h-24 rounded-full bg-orange-400/20 blur-3xl animate-float-slow transition-all duration-500 -z-10" id="signup-deco-1"></div>
+    <div class="absolute bottom-24 right-16 w-32 h-32 rounded-full bg-orange-300/20 blur-3xl animate-float-delay transition-all duration-500 -z-10" id="signup-deco-2"></div>
+    <div class="absolute top-1/3 right-8 w-16 h-16 rounded-full bg-gray-400/20 blur-2xl animate-float-medium transition-all duration-500 -z-10" id="signup-deco-3"></div>
 
-<div id="signup-container" class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
     <!-- Dark Mode Toggle -->
-    <button id="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false" class="absolute top-4 right-4 p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition">
-        <span id="theme-icon" class="text-xl" aria-hidden="true">🌙</span>
+    <button id="theme-toggle" onclick="toggleSignupTheme()" class="absolute top-4 right-4 p-2.5 rounded-full bg-white/70 dark:bg-white/10 backdrop-blur shadow-sm hover:bg-white hover:shadow-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-400/60 focus:ring-offset-2 z-10" type="button" aria-label="Toggle dark mode" aria-pressed="false">
+      <span id="theme-icon" class="text-xl block transition-transform duration-500 hover:rotate-12" aria-hidden="true">🌙</span>
     </button>
-    <div id="signup-card" class="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
-        <!-- Logo Placeholder -->
-        <div class="flex justify-center mb-6">
-            <img src="{% static 'img/Rockstar.png' %}" alt="Logo" class="h-16 w-16">
+
+    <div id="signup-card" class="max-w-md w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-8 md:p-10 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 animate-fade-up border border-gray-200/50 dark:border-gray-700/50">
+      <!-- Logo Placeholder -->
+      <div class="flex justify-center mb-8 animate-scale-in">
+        <img src="{% static 'img/Rockstar.png' %}" alt="Rockstar Logo" class="h-16 w-16 drop-shadow-md"></img>
+      </div>
+
+      <h2 id="signup-title" class="text-2xl font-bold text-center mb-8 text-gray-900 dark:text-white transition-colors duration-300">Create Your Account</h2>
+
+      {% if messages %}
+        <div aria-live="polite" aria-atomic="true" class="mb-4 space-y-2">
+          {% for message in messages %}
+            <div class="text-sm text-center px-4 py-3 rounded-xl transition-opacity duration-300
+              {% if message.tags == 'error' %}bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-300/50 dark:border-red-700/50
+              {% elif message.tags == 'success' %}bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-300/50 dark:border-green-700/50
+              {% else %}bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-300/50 dark:border-blue-700/50{% endif %}"
+              role="alert">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <form method="post" class="space-y-5" aria-label="Sign up form" novalidate>
+        {% csrf_token %}
+
+        <!-- Employee Number with icon input -->
+        <div class="group">
+          <div class="relative">
+            <span id="emp-icon" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none transition-colors duration-300 group-focus-within:text-orange-500">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+              </svg>
+            </span>
+            <input type="text" name="employee_number" id="signup-employee-number" placeholder=" "
+              class="peer w-full pl-10 pr-4 pt-5 pb-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none transition-all duration-300 hover:border-gray-400 hover:shadow-sm focus:shadow-[0_0_0_4px_rgba(251,146,60,0.15)]"
+              autocomplete="off" aria-describedby="employee_number-desc" />
+            <span id="employee_number-desc" class="sr-only">Enter your employee number in the format Emp-XXXX-XXXX</span>
+            <label for="signup-employee-number" class="field-float-label absolute left-[42px] top-2.5 text-xs text-orange-500 font-medium pointer-events-none">Employee Number</label>
+          </div>
+          {% if form.employee_number.errors %}
+            <p class="text-red-500 text-xs mt-1.5 animate-shake" role="alert">{{ form.employee_number.errors.0 }}</p>
+          {% endif %}
         </div>
 
-        <h2 id="signup-title" class="text-2xl font-bold text-center mb-6">Create Your Account</h2>
+        <!-- Email with icon input -->
+        <div class="group">
+          <div class="relative">
+            <span id="email-icon" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none transition-colors duration-300 group-focus-within:text-orange-500">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+              </svg>
+            </span>
+            <input type="email" name="email" id="signup-email" placeholder=" "
+              class="peer w-full pl-10 pr-4 pt-5 pb-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none transition-all duration-300 hover:border-gray-400 hover:shadow-sm focus:shadow-[0_0_0_4px_rgba(251,146,60,0.15)]"
+              autocomplete="email" aria-describedby="email-desc" />
+            <span id="email-desc" class="sr-only">Enter your email address</span>
+            <label for="signup-email" class="field-float-label absolute left-[42px] top-2.5 text-xs text-orange-500 font-medium pointer-events-none">Email Address</label>
+          </div>
+          {% if form.email.errors %}
+            <p class="text-red-500 text-xs mt-1.5 animate-shake" role="alert">{{ form.email.errors.0 }}</p>
+          {% endif %}
+        </div>
 
-        {% if messages %}
-            {% for message in messages %}
-                <div class="mb-4 text-sm p-3 rounded {% if message.tags == 'error' %}bg-red-100 text-red-700 border border-red-300{% else %}bg-green-100 text-green-700 border border-green-300{% endif %}" role="alert">
-                    {{ message }}
-                </div>
-            {% endfor %}
+        <!-- Password with icon input + strength meter -->
+        <div class="space-y-1.5">
+          <div class="relative">
+            <span id="pw-icon" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none transition-colors duration-300 group-focus-within:text-orange-500">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m3.75 0l-3.75-3.75M16.5 10.5h3.75m-3.75 0l-3.75 3.75M7.5 16.5h9" />
+              </svg>
+            </span>
+            <input type="password" name="password" id="signup-password" placeholder=" "
+              class="peer w-full pl-10 pr-11 pt-5 pb-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none transition-all duration-300 hover:border-gray-400 hover:shadow-sm focus:shadow-[0_0_0_4px_rgba(251,146,60,0.15)]"
+              autocomplete="new-password"
+              oninput="updateSignupStrength(this.value)" aria-describedby="password-desc" />
+            <span id="password-desc" class="sr-only">Enter your password</span>
+            <label for="signup-password" class="field-float-label absolute left-[42px] top-2.5 text-xs text-orange-500 font-medium pointer-events-none">Password</label>
+            <button type="button" onclick="togglePassword('signup-password')" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:ring-offset-1 rounded p-0.5 transition-colors duration-200" aria-label="Toggle password visibility" aria-pressed="false">
+              <svg id="signup-password-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- 4-level strength bar -->
+          <div id="strength-meter" class="flex gap-1 mt-1.5 px-0.5">
+            <div class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-600 transition-colors duration-300" id="signup-str-1"></div>
+            <div class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-600 transition-colors duration-300" id="signup-str-2"></div>
+            <div class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-600 transition-colors duration-300" id="signup-str-3"></div>
+            <div class="h-1 flex-1 rounded-full bg-gray-200 dark:bg-gray-600 transition-colors duration-300" id="signup-str-4"></div>
+          </div>
+          <p id="strength-text" class="text-xs mt-0.5 text-gray-500 dark:text-gray-400 transition-colors duration-300" aria-live="polite"></p>
+
+          <!-- Password requirements -->
+          <div class="text-xs text-gray-500 dark:text-gray-400 mt-2 space-y-1" id="password-requirements">
+            <p class="font-medium text-gray-700 dark:text-gray-300">Password must have:</p>
+            <ul class="list-disc list-inside space-y-0.5">
+              <li id="req-length">At least 8 characters</li>
+              <li id="req-upper" class="text-gray-400">One uppercase letter</li>
+              <li id="req-lower" class="text-gray-400">One lowercase letter</li>
+              <li id="req-number" class="text-gray-400">One number</li>
+              <li id="req-special" class="text-gray-400">One special character (!@#$...)</li>
+            </ul>
+          </div>
+        </div>
+        {% if form.password.errors %}
+          <p class="text-red-500 text-xs animate-shake" role="alert">{{ form.password.errors.0 }}</p>
         {% endif %}
 
-        <form method="post" id="signup-form" class="space-y-4" novalidate>
-            {% csrf_token %}
-            
-            <!-- Employee Number Field -->
-            <div>
-                <label for="id_employee_number" class="block text-sm font-medium mb-1">Employee Number</label>
-                {{ form.employee_number }}
-                {% if form.employee_number.errors %}
-                    <p class="text-red-500 text-xs mt-1" role="alert">{{ form.employee_number.errors.0 }}</p>
-                {% endif %}
-            </div>
-            
-            <!-- Email Field -->
-            <div>
-                <label for="id_email" class="block text-sm font-medium mb-1">Email Address</label>
-                {{ form.email }}
-                {% if form.email.errors %}
-                    <p class="text-red-500 text-xs mt-1" role="alert">{{ form.email.errors.0 }}</p>
-                {% endif %}
-            </div>
-            
-            <!-- Password Field -->
-            <div>
-                <label for="id_password" class="block text-sm font-medium mb-1">Password</label>
-                <div class="relative">
-                    {{ form.password }}
-                    <button type="button" onclick="togglePassword('id_password')" 
-                            class="password-toggle absolute right-2 top-0 bottom-0 flex items-center text-gray-500 hover:text-gray-700"
-                            aria-label="Toggle password visibility"
-                            aria-pressed="false">
-                        <svg id="id_password-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                    </button>
-                </div>
-                {% if form.password.errors %}
-                    <p class="text-red-500 text-xs mt-1" role="alert">{{ form.password.errors.0 }}</p>
-                {% endif %}
-                <!-- Password Strength Meter -->
-                <div class="mt-2">
-                    <div class="h-1 w-full bg-gray-200 rounded overflow-hidden">
-                        <div id="strength-bar" class="h-full w-0 transition-all duration-300" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                    <p id="strength-text" class="text-xs mt-1" aria-live="polite"></p>
-                </div>
-                <!-- Password Requirements -->
-                <div class="text-xs text-gray-500 mt-2 space-y-1" id="password-requirements">
-                    <p class="font-medium">Password must have:</p>
-                    <ul class="list-disc list-inside space-y-0.5">
-                        <li id="req-length" class="{% if form.password.value|length >= 8 %}text-green-600{% endif %}">At least 8 characters</li>
-                        <li id="req-upper" class="text-gray-400">One uppercase letter</li>
-                        <li id="req-lower" class="text-gray-400">One lowercase letter</li>
-                        <li id="req-number" class="text-gray-400">One number</li>
-                        <li id="req-special" class="text-gray-400">One special character (!@#$...)</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <!-- Confirm Password Field -->
-            <div>
-                <label for="id_confirm_password" class="block text-sm font-medium mb-1">Confirm Password</label>
-                <div class="relative">
-                    {{ form.confirm_password }}
-                    <button type="button" onclick="togglePassword('id_confirm_password')" 
-                            class="password-toggle absolute right-2 top-0 bottom-0 flex items-center text-gray-500 hover:text-gray-700"
-                            aria-label="Toggle confirm password visibility"
-                            aria-pressed="false">
-                        <svg id="id_confirm_password-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                    </button>
-                </div>
-                {% if form.confirm_password.errors %}
-                    <p class="text-red-500 text-xs mt-1" role="alert">{{ form.confirm_password.errors.0 }}</p>
-                {% endif %}
-            </div>
-
-            <button type="submit" id="submit-btn" class="w-full bg-orange-500 text-white py-2.5 rounded hover:bg-orange-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                <span id="btn-text">Sign Up</span>
-                <span id="btn-loader" class="hidden inline-block">
-                    <svg class="animate-spin h-5 w-5 text-white mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                </span>
+        <!-- Confirm Password -->
+        <div class="group">
+          <div class="relative">
+            <span id="confirm-pw-icon" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none transition-colors duration-300 group-focus-within:text-orange-500">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m3.75 0l-3.75-3.75M16.5 10.5h3.75m-3.75 0l-3.75 3.75M7.5 16.5h9" />
+              </svg>
+            </span>
+            <input type="password" name="confirm_password" id="signup-confirm-password" placeholder=" "
+              class="peer w-full pl-10 pr-11 pt-5 pb-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none transition-all duration-300 hover:border-gray-400 hover:shadow-sm focus:shadow-[0_0_0_4px_rgba(251,146,60,0.15)]"
+              autocomplete="new-password" />
+            <label for="signup-confirm-password" class="field-float-label absolute left-[42px] top-2.5 text-xs text-orange-500 font-medium pointer-events-none">Confirm Password</label>
+            <button type="button" onclick="togglePassword('signup-confirm-password')" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:ring-offset-1 rounded p-0.5 transition-colors duration-200" aria-label="Toggle confirm password visibility" aria-pressed="false">
+              <svg id="signup-confirm-password-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
             </button>
-        </form>
+          </div>
+        </div>
+        {% if form.confirm_password.errors %}
+          <p class="text-red-500 text-xs animate-shake" role="alert">{{ form.confirm_password.errors.0 }}</p>
+        {% endif %}
 
-        <p id="signup-link" class="mt-4 text-center text-sm">
-            Already have an account? <a href="{% url 'login' %}" class="text-orange-500 font-semibold hover:underline">Login</a>
-        </p>
+        <button type="submit" id="signup-submit-btn" class="w-full relative overflow-hidden bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white py-3 rounded-xl font-semibold tracking-wide shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 hover:-translate-y-0.5 active:translate-y-0 active:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500/60 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m3.75 0l-3.75-3.75m0 0L8.25 10.5h7.5" />
+          </svg>
+          <span id="signup-btn-text">Sign Up</span>
+          <svg id="signup-btn-spinner" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="hidden animate-spin h-5 w-5" aria-hidden="true">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <!-- Loading skeleton overlay -->
+          <div id="signup-skeleton" class="absolute inset-0 hidden rounded-xl overflow-hidden pointer-events-none">
+            <div class="loading-skeleton-shimmer h-full w-full"></div>
+          </div>
+        </button>
+      </form>
+
+      <!-- Global mismatch error bar -->
+      <div id="signup-mismatch-bar" class="hidden mt-3 px-3 py-2 bg-red-50 dark:bg-red-900/30 border border-red-300/50 dark:border-red-700/50 rounded-xl text-xs text-red-700 dark:text-red-300 text-center animate-shake" role="alert">
+        Passwords do not match — please re-check both fields.
+      </div>
+
+      <p id="signup-link" class="mt-5 text-center text-sm text-gray-600 dark:text-gray-300 transition-colors duration-300 animate-fade-in-delay">
+        Already have an account?
+        <a href="{% url 'login' %}" class="text-orange-500 font-semibold hover:underline focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:ring-offset-1 rounded px-1 transition-colors duration-200">Login</a>
+      </p>
     </div>
-</div>
-
-
+  </div>
 {% endblock %}
 
 
 {% block extra_scripts %}
 <script>
-    // Dark colors
+    ;(function () {
+      'use strict'
+
+      /* ─── Inject CSS keyframes once ─────────────────────────────────────── */
+      if (!document.getElementById('signup-styles')) {
+        var s = document.createElement('style')
+        s.id = 'signup-styles'
+        s.textContent = ['@keyframes rippleAnim{to{transform:scale(2.4);opacity:0}}', '@keyframes skeleton-shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}', '.loading-skeleton-shimmer{background:linear-gradient(90deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.15) 50%,rgba(255,255,255,0) 100%);background-size:400px 100%;animation:skeleton-shimmer 1.5s ease-in-out infinite}', '@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}', '@keyframes scaleIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}', '@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}', '@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}', '@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}', '.animate-fade-up{animation:fadeUp .6s ease-out both}', '.animate-scale-in{animation:scaleIn .5s ease-out both}', '.animate-gradient{background-size:200% 200%!important;animation:gradientShift 8s ease-in-out infinite}', '.animate-float-slow{animation:float 7s ease-in-out infinite}', '.animate-float-medium{animation:float 5s ease-in-out infinite 1s}', '.animate-float-delay{animation:float 9s ease-in-out infinite 2s}', '.animate-fade-in-delay{animation:fadeUp .6s ease-out .2s both}', '.animate-shake{animation:shake .4s ease}', 'html,body{transition:background-color .5s ease,color .5s ease}'].join('\n')
+        document.head.appendChild(s)
+      }
+
+      /* ─── Ripple effect on signup button ─────────────────────────────────── */
+      document.querySelectorAll('#signup-card button[type=submit]').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          var rect = this.getBoundingClientRect()
+          var size = Math.max(rect.width, rect.height)
+          var r = document.createElement('span')
+          r.style.cssText = 'position:absolute;border-radius:50%;background:rgba(255,255,255,.25);width:' + size + 'px;height:' + size + 'px;left:' + (e.clientX - rect.left - size / 2) + 'px;top:' + (e.clientY - rect.top - size / 2) + 'px;transform:scale(0);animation:rippleAnim .5s linear forwards;pointer-events:none;z-index:0;'
+          this.appendChild(r)
+          setTimeout(function () { r.remove() }, 600)
+        })
+      })
     const darkBg = '#111827';
     const darkCard = '#1f2937';
     const darkText = '#f3f4f6';
@@ -240,115 +314,114 @@
     })();
 
     // Loading state on form submit
-    const form = document.getElementById('signup-form');
-    const submitBtn = document.getElementById('submit-btn');
-    const btnText = document.getElementById('btn-text');
-    const btnLoader = document.getElementById('btn-loader');
+    const signupForm       = document.querySelector('form[aria-label="Sign up form"]')
+    const submitBtn        = document.getElementById('signup-submit-btn')
+    const btnText          = document.getElementById('signup-btn-text')
+    const btnSpinner       = document.getElementById('signup-btn-spinner')
+    const skeleton         = document.getElementById('signup-skeleton')
+    const btnIcon          = submitBtn ? submitBtn.querySelector('svg[aria-hidden]') : null
+    var   submitTimer      = null
 
-    form.addEventListener('submit', function(e) {
-        // Show loading state
-        submitBtn.disabled = true;
-        btnText.classList.add('hidden');
-        btnLoader.classList.remove('hidden');
-        btnText.classList.add('inline-block');
-    });
+    signupForm.addEventListener('submit', function () {
+      submitBtn.disabled = true
+      btnText.textContent = 'Creating account…'
+      btnSpinner.classList.remove('hidden')
+      skeleton.classList.remove('hidden')
+      if (btnIcon) btnIcon.classList.add('hidden')
+      submitTimer = setTimeout(function () {
+        submitBtn.disabled    = false
+        btnText.textContent   = 'Sign Up'
+        btnSpinner.classList.add('hidden')
+        skeleton.classList.add('hidden')
+        if (btnIcon) btnIcon.classList.remove('hidden')
+      }, 10000)
+    })
 
-    // Password Strength Meter
-    const passwordInput = document.getElementById('id_password');
-    const strengthBar = document.getElementById('strength-bar');
-    const strengthText = document.getElementById('strength-text');
+    /* ─── Password visibility toggle — id-based, not fragile siblings ───── */
+    window.togglePassword = function (fieldId) {
+      var field    = document.getElementById(fieldId)
+      var svgEl    = document.getElementById(fieldId + '-icon-svg')
+      var btn      = document.getElementById(fieldId + '-toggle-btn') || document.querySelector('button[onclick*="' + fieldId + '"], button[aria-label*="' + fieldId.split('-').pop() + '"]')
+      if (!field || !svgEl || !btn) return
 
-    // Password requirement elements
-    const reqLength = document.getElementById('req-length');
-    const reqUpper = document.getElementById('req-upper');
-    const reqLower = document.getElementById('req-lower');
-    const reqNumber = document.getElementById('req-number');
-    const reqSpecial = document.getElementById('req-special');
+      var EYE   = '<path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>'
+      var SLASH = '<path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"/>'
 
-    passwordInput.addEventListener('input', function() {
-        const password = passwordInput.value;
-        let strength = 0;
-        
-        // Check each requirement
-        const hasLength = password.length >= 8;
-        const hasLength12 = password.length >= 12;
-        const hasLower = /[a-z]/.test(password);
-        const hasUpper = /[A-Z]/.test(password);
-        const hasNumber = /[0-9]/.test(password);
-        const hasSpecial = /[^a-zA-Z0-9]/.test(password);
-        
-        // Update requirement visual states
-        if (hasLength) {
-            reqLength.classList.remove('text-gray-400');
-            reqLength.classList.add('text-green-600');
-        } else {
-            reqLength.classList.remove('text-green-600');
-            reqLength.classList.add('text-gray-400');
-        }
-        
-        if (hasUpper) {
-            reqUpper.classList.remove('text-gray-400');
-            reqUpper.classList.add('text-green-600');
-        } else {
-            reqUpper.classList.remove('text-green-600');
-            reqUpper.classList.add('text-gray-400');
-        }
-        
-        if (hasLower) {
-            reqLower.classList.remove('text-gray-400');
-            reqLower.classList.add('text-green-600');
-        } else {
-            reqLower.classList.remove('text-green-600');
-            reqLower.classList.add('text-gray-400');
-        }
-        
-        if (hasNumber) {
-            reqNumber.classList.remove('text-gray-400');
-            reqNumber.classList.add('text-green-600');
-        } else {
-            reqNumber.classList.remove('text-green-600');
-            reqNumber.classList.add('text-gray-400');
-        }
-        
-        if (hasSpecial) {
-            reqSpecial.classList.remove('text-gray-400');
-            reqSpecial.classList.add('text-green-600');
-        } else {
-            reqSpecial.classList.remove('text-green-600');
-            reqSpecial.classList.add('text-gray-400');
-        }
-        
-        // Calculate strength
-        if (hasLength) strength++;
-        if (hasLength12) strength++;
-        if (hasLower) strength++;
-        if (hasUpper) strength++;
-        if (hasNumber) strength++;
-        if (hasSpecial) strength++;
-        
-        const percentage = (strength / 6) * 100;
-        strengthBar.style.width = percentage + '%';
-        strengthBar.setAttribute('aria-valuenow', percentage);
-        
-        if (strength <= 2) {
-            strengthBar.className = 'h-full transition-all duration-300 bg-red-500';
-            strengthBar.setAttribute('aria-valuenow', 33);
-            strengthText.textContent = 'Weak';
-            strengthText.className = 'text-xs mt-1 text-red-500';
-        } else if (strength <= 4) {
-            strengthBar.className = 'h-full transition-all duration-300 bg-yellow-500';
-            strengthBar.setAttribute('aria-valuenow', 66);
-            strengthText.textContent = 'Medium';
-            strengthText.className = 'text-xs mt-1 text-yellow-500';
-        } else {
-            strengthBar.className = 'h-full transition-all duration-300 bg-green-500';
-            strengthBar.setAttribute('aria-valuenow', 100);
-            strengthText.textContent = 'Strong';
-            strengthText.className = 'text-xs mt-1 text-green-500';
-        }
-    });
+      field.type         === 'password' ? (field.type = 'text', svgEl.innerHTML = SLASH, btn.setAttribute('aria-pressed','true'))  : (field.type = 'password', svgEl.innerHTML = EYE, btn.setAttribute('aria-pressed','false'))
+    }
 
-    // Theme toggle event listener
-    document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+    /* ─── 4-bar strength meter — matches the actual html structure ─────────── */
+    window.updateSignupStrength = function updateSignupStrength(val) {
+      var score       = 0
+      var colors      = ['#ef4444','#f97316','#eab308','#22c55e']
+      if (val.length >= 4)  score++
+      if (val.length >= 7)  score++
+      if (/[A-Z]/.test(val) && /[a-z]/.test(val)) score++
+      if (/[\d!@#$%^&*(),.?":{}|<>]/.test(val))  score++
+
+      for (var n = 1; n <= 4; n++) {
+        var bar = document.getElementById('signup-str-' + n)
+        if (!bar) continue
+        if (n <= score && val.length > 0) {
+          bar.style.backgroundColor = colors[Math.min(score - 1, 3)]
+          bar.style.boxShadow       = '0 0 8px ' + colors[Math.min(score - 1, 3)] + '40'
+        } else {
+          bar.style.backgroundColor = ''
+          bar.style.boxShadow       = ''
+        }
+      }
+
+      /* Update requirement list colours */
+      var rl = document.getElementById('req-length')
+      var ru = document.getElementById('req-upper')
+      var rlo= document.getElementById('req-lower')
+      var rn = document.getElementById('req-number')
+      var rs = document.getElementById('req-special')
+      var checks = [val.length >= 8, /[A-Z]/.test(val), /[a-z]/.test(val), /[\d]/.test(val), /[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(val)]
+      var targets= [rl, ru, rlo, rn, rs]
+      targets.forEach(function (el, i) { el.className = checks[i] ? 'text-green-600' : 'text-gray-400' })
+    }
+  })()
+
+  /* ─── Floating-label peer class fix ─────────────────────────────────────── */
+  ;(function fixfloatingLabels () {
+    document.querySelectorAll('#signup-card input[placeholder=" "]').forEach(function (inp) {
+      inp.addEventListener('focus', function () { this.classList.add('peer-focus', 'peer-input') })
+      inp.addEventListener('input', function () { this.classList.add('not-placeholder-shown') })
+      inp.addEventListener('blur', function () { this.classList.remove('not-placeholder-shown'); if (!this.value) this.classList.remove('peer-focus', 'peer-input') })
+      if (inp.value) inp.classList.add('not-placeholder-shown')
+    })
+  })()
+
+  ;(function validateEmpty () {
+    document.querySelectorAll('#signup-card input[placeholder=" "]').forEach(function (inp) {
+      inp.addEventListener('invalid', function () {
+        this.style.borderColor = '#ef4444'
+        this.style.boxShadow   = '0 0 0 4px rgba(239,68,68,.15)'
+      })
+      inp.addEventListener('input', function () {
+        if (this.validity.valid) { this.style.borderColor = ''; this.style.boxShadow = '' }
+      })
+    })
+  })()
+
+  /* ─── Password mismatch bar ──────────────────────────────────────────────── */
+  ;(function mismatchWatchdog () {
+    var pw      = document.getElementById('signup-password')
+    var cpw     = document.getElementById('signup-confirm-password')
+    var bar     = document.getElementById('signup-mismatch-bar')
+    function tick () {
+      if (pw && cpw && bar) pw.value && cpw.value && pw.value !== cpw.value ? bar.classList.remove('hidden') : bar.classList.add('hidden')
+    }
+    if (pw)  pw.addEventListener('input',  tick)
+    if (cpw) cpw.addEventListener('input', tick)
+  })()
+
+  /* ─── Restore floating-label state after auto-fill / pageshow ────────────── */
+  window.addEventListener('pageshow', function () {
+    document.querySelectorAll('#signup-card input[placeholder=" "]').forEach(function (inp) {
+      if (inp.value) inp.classList.add('not-placeholder-shown')
+    })
+  })
 </script>
 {% endblock %}

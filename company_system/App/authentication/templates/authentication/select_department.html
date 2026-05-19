@@ -1,146 +1,237 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
-{% block title %} Login {% endblock %}
+{% block title %}
+  Select Department
+{% endblock %}
 
 {% block content %}
+  <div id="dept-container" class="min-h-screen flex items-center justify-center relative overflow-hidden px-4 transition-colors duration-500" role="main" aria-label="Select department page">
+    <!-- Animated mesh gradient background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-gray-100 via-white to-gray-200 animate-gradient transition-all duration-500 -z-10" id="dept-bg-gradient"></div>
+    <!-- Floating decorative elements -->
+    <div class="absolute top-20 left-10 w-24 h-24 rounded-full bg-orange-400/20 blur-3xl animate-float-slow transition-all duration-500 -z-10" id="dept-deco-1"></div>
+    <div class="absolute bottom-24 right-16 w-32 h-32 rounded-full bg-orange-300/20 blur-3xl animate-float-delay transition-all duration-500 -z-10" id="dept-deco-2"></div>
+    <div class="absolute top-1/3 right-8 w-16 h-16 rounded-full bg-gray-400/20 blur-2xl animate-float-medium transition-all duration-500 -z-10" id="dept-deco-3"></div>
 
-<div id="dept-container" class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
     <!-- Dark Mode Toggle -->
-    <button id="theme-toggle" onclick="toggleTheme()" class="absolute top-4 right-4 p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition">
-        <span id="theme-icon" class="text-xl">🌙</span>
-    </button>
-    <div id="dept-card" class="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
-        <!-- Logo Placeholder -->
-        <div class="flex justify-center mb-6">
-            <img src="{% static 'img/Rockstar.png' %}" alt="Logo" class="h-16 w-16">
+    <!-- FIX (warning): aria-pressed is now updated dynamically in applyDeptTheme() -->
+    <button id="theme-toggle" onclick="toggleDeptTheme()" class="absolute top-4 right-4 p-2.5 rounded-full bg-white/70 dark:bg-white/10 backdrop-blur shadow-sm hover:bg-white hover:shadow-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-400/60 focus:ring-offset-2 z-10" type="button" aria-label="Toggle dark mode" aria-pressed="false"><span id="theme-icon" class="text-xl block transition-transform duration-500 hover:rotate-12" aria-hidden="true">🌙</span></button>
+
+    <div id="dept-card" class="max-w-md w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-8 md:p-10 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 animate-fade-up border border-gray-200/50 dark:border-gray-700/50">
+      <!-- Logo -->
+      <div class="flex justify-center mb-8 animate-scale-in">
+        <!-- FIX (bug): removed invalid </img> closing tag — img is a void element -->
+        <img src="{% static 'img/Rockstar.png' %}" alt="Rockstar Logo" class="h-16 w-16 drop-shadow-md" />
+      </div>
+
+      <h2 id="dept-title" class="text-2xl font-bold text-center mb-8 text-gray-900 dark:text-white transition-colors duration-300">Select Department</h2>
+
+      {% if messages %}
+        <div aria-live="polite" aria-atomic="true" class="mb-4 space-y-2">
+          {% for message in messages %}
+            <div class="text-sm text-center px-4 py-3 rounded-xl transition-opacity duration-300
+              {% if message.tags == 'error' %}
+                bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-300/50 dark:border-red-700/50
+
+              {% elif message.tags == 'success' %}
+                bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-300/50 dark:border-green-700/50
+
+              {% else %}
+                bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-300/50 dark:border-blue-700/50
+              {% endif %}"
+              role="alert">{{ message }}</div>
+          {% endfor %}
         </div>
+      {% endif %}
 
-        <h2 id="dept-title" class="text-2xl font-bold text-center mb-6">Select Department</h2>
+      {% if departments %}
+        <form method="post" class="space-y-5" aria-label="Department selection form">
+          {% csrf_token %}
 
-        {% if messages %}
-            {% for message in messages %}
-                <div class="mb-2 text-sm {{ message.tags }} text-center">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
+          <!-- Department select with SVG icon -->
+          <div class="group">
+            <label for="department" id="dept-label" class="sr-only">Choose a department</label>
+            <div class="relative">
+              <span id="dept-icon" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none transition-colors duration-300 group-focus-within:text-orange-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.884.164-1.8.255-2.75.255a47.85 47.85 0 01-8.5-.41c-2.172-.291-3.913-1.21-5.128-2.632M18.75 14.15a3 3 0 01-3 3H8.25a3 3 0 01-3-3m12 0a3 3 0 01-3 3H8.25a3 3 0 01-3-3" />
+                </svg>
+              </span>
+              <select name="department" id="department" required class="peer w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none transition-all duration-300 hover:border-gray-400 hover:shadow-sm focus:shadow-[0_0_0_4px_rgba(251,146,60,0.15)] appearance-none" aria-describedby="dept-desc">
+                {% for dept in departments %}
+                  <option value="{{ dept }}">{{ dept }}</option>
+                {% endfor %}
+                <option value="All">All Departments (Full Access)</option>
+              </select>
+              <span id="dept-desc" class="sr-only">Select the department you want to access</span>
+              <label for="department" class="field-float-label absolute left-[42px] top-2.5 text-xs text-orange-500 font-medium pointer-events-none">Department</label>
+              <!-- FIX (warning): corrected chevron path — now points DOWN (∨) not right (›) -->
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+              </span>
+            </div>
+          </div>
 
-        {% if departments %}
-            <form method="post" class="space-y-4">
-                {% csrf_token %}
-                <div>
-                    <label for="department" class="block text-sm font-medium mb-1">Choose a department</label>
-                    <select name="department" id="department" required
-                        class="w-full p-2 border rounded focus:ring-2 focus:ring-orange-400 bg-white">
-                        {% for dept in departments %}
-                            <option value="{{ dept }}">{{ dept }}</option>
-                        {% endfor %}
-                        <option value="All">All Departments (Full Access)</option>
-                    </select>
-                </div>
+          <button type="submit" id="dept-submit-btn" class="w-full relative overflow-hidden bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white py-3 rounded-xl font-semibold tracking-wide shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 hover:-translate-y-0.5 active:translate-y-0 active:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500/60 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5L21 12" />
+            </svg>Continue<svg id="dept-btn-spinner" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="hidden animate-spin h-5 w-5 ml-1" aria-hidden="true">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <div id="dept-skeleton" class="absolute inset-0 hidden rounded-xl overflow-hidden pointer-events-none">
+              <div class="loading-skeleton-shimmer h-full w-full"></div>
+            </div>
+          </button>
+        </form>
+      {% else %}
+        <p id="dept-no-dept" class="text-center text-gray-600 dark:text-gray-300 transition-colors duration-300 animate-fade-in-delay">No departments available.</p>
+      {% endif %}
 
-                <button type="submit" class="w-full bg-orange-500 text-white py-2 rounded hover:bg-orange-600 transition">
-                    Continue
-                </button>
-            </form>
-        {% else %}
-            <p id="dept-no-dept" class="text-center text-gray-600">No departments available.</p>
-        {% endif %}
-
-        <p id="dept-logout" class="mt-4 text-center text-sm">
-            <form method="post" action="{% url 'logout' %}?next=/login/" id="logout-form-select" style="display: inline;">
-                {% csrf_token %}
-                <button type="button" onclick="confirmLogout('logout-form-select')" class="text-red-500 hover:underline">Logout</button>
-            </form>
-        </p>
+      <p id="dept-logout" class="mt-5 text-center text-sm transition-colors duration-300 animate-fade-in-delay">
+        <!-- FIX (warning): added relative overflow-hidden so ripple stays clipped inside the logout button -->
+        <form method="post" action="{% url 'logout' %}?next=/login/" id="logout-form-select" style="display: inline;">
+          {% csrf_token %}
+          <button type="button" onclick="confirmLogout('logout-form-select')" class="relative overflow-hidden text-red-500 hover:underline focus:outline-none focus:ring-2 focus:ring-red-400/40 focus:ring-offset-1 rounded px-1 transition-colors duration-200">Logout</button>
+        </form>
+      </p>
     </div>
-</div>
-
-
+  </div>
 {% endblock %}
 
 {% block extra_scripts %}
-<script>
-    // Dark colors
-    const darkBg = '#111827';
-    const darkCard = '#1f2937';
-    const darkText = '#f3f4f6';
-    const darkMuted = '#9ca3af';
-    const darkInputBg = '#374151';
-    const darkInputBorder = '#4b5563';
-    
-    // Light colors
-    const lightBg = '#f3f4f6';
-    const lightCard = '#ffffff';
-    const lightText = '#1f2937';
-    const lightMuted = '#6b7280';
-    const lightInputBg = '#ffffff';
-    const lightInputBorder = '#d1d5cb';
-    
-    let isDark = false;
+  <script>
+  ;(function () {
+    'use strict'
 
-    function toggleTheme() {
-        const container = document.getElementById('dept-container');
-        const card = document.getElementById('dept-card');
-        const title = document.getElementById('dept-title');
-        const icon = document.getElementById('theme-icon');
-        const noDept = document.getElementById('dept-no-dept');
-        
-        // Toggle select and labels
-        const select = document.getElementById('department');
-        const labels = document.querySelectorAll('label');
-        
-        if (isDark) {
-            // Switch to light mode
-            container.style.backgroundColor = lightBg;
-            card.style.backgroundColor = lightCard;
-            card.style.color = lightText;
-            title.style.color = lightText;
-            if (noDept) noDept.style.color = lightMuted;
-            icon.textContent = '🌙';
-            
-            if (select) {
-                select.style.backgroundColor = lightInputBg;
-                select.style.borderColor = lightInputBorder;
-                select.style.color = lightText;
-            }
-            
-            labels.forEach(label => {
-                label.style.color = lightText;
-            });
-            
-            isDark = false;
-            localStorage.setItem('theme', 'light');
-        } else {
-            // Switch to dark mode
-            container.style.backgroundColor = darkBg;
-            card.style.backgroundColor = darkCard;
-            card.style.color = darkText;
-            title.style.color = darkText;
-            if (noDept) noDept.style.color = darkMuted;
-            icon.textContent = '🌞';
-            
-            if (select) {
-                select.style.backgroundColor = darkInputBg;
-                select.style.borderColor = darkInputBorder;
-                select.style.color = darkText;
-            }
-            
-            labels.forEach(label => {
-                label.style.color = darkText;
-            });
-            
-            isDark = true;
-            localStorage.setItem('theme', 'dark');
-        }
+    /* ─── Inject CSS keyframes once ─────────────────────────────────────── */
+    if (!document.getElementById('dept-styles')) {
+      var s = document.createElement('style')
+      s.id = 'dept-styles'
+      s.textContent = ['@keyframes rippleAnim{to{transform:scale(2.4);opacity:0}}', '@keyframes skeleton-shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}', '.loading-skeleton-shimmer{background:linear-gradient(90deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.15) 50%,rgba(255,255,255,0) 100%);background-size:400px 100%;animation:skeleton-shimmer 1.5s ease-in-out infinite}', '@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}', '@keyframes scaleIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}', '@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}', '@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}', '@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}', '.animate-fade-up{animation:fadeUp .6s ease-out both}', '.animate-scale-in{animation:scaleIn .5s ease-out both}', '.animate-gradient{background-size:200% 200%!important;animation:gradientShift 8s ease-in-out infinite}', '.animate-float-slow{animation:float 7s ease-in-out infinite}', '.animate-float-medium{animation:float 5s ease-in-out infinite 1s}', '.animate-float-delay{animation:float 9s ease-in-out infinite 2s}', '.animate-fade-in-delay{animation:fadeUp .6s ease-out .2s both}', '.animate-shake{animation:shake .4s ease}', 'html,body{transition:background-color .5s ease,color .5s ease}'].join('\n')
+      document.head.appendChild(s)
     }
 
-    // Initialize theme on page load
-    (function initTheme() {
-        const savedTheme = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        
-        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-            toggleTheme();
-        }
-    })();
+    /* ─── Theme ──────────────────────────────────────────────────────────── */
+    var isDark = false
+
+    var deptThemeMap = {
+      dark: {
+        gradient: 'linear-gradient(135deg,#111827,#1f2937,#0f172a)',
+        titleColor: '#f3f4f6',
+        iconText: '🌞',
+        inputBg: '#374151',
+        inputBorder: '#4b5563',
+        inputColor: '#f3f4f6',
+        decoColor: 'rgba(251,146,60,.15)',
+        noDeptColor: '#9ca3af'
+      },
+      light: {
+        gradient: 'linear-gradient(135deg,#f3f4f6,#ffffff,#e5e7eb)',
+        titleColor: '#1f1f1f',
+        iconText: '🌙',
+        inputBg: '#ffffff',
+        inputBorder: '#d1d5db',
+        inputColor: '#1f1f1f',
+        decoColor: 'rgba(251,146,60,.2)',
+        noDeptColor: '#6b7280'
+      }
+    }
+
+    function applyDeptTheme(dark) {
+      var p = dark ? deptThemeMap.dark : deptThemeMap.light
+      var grad    = document.getElementById('dept-bg-gradient')
+      var title   = document.getElementById('dept-title')
+      var icon    = document.getElementById('theme-icon')
+      var noDept  = document.getElementById('dept-no-dept')
+      var select  = document.getElementById('department')
+      var toggle  = document.getElementById('theme-toggle')
+
+      grad.style.background        = p.gradient
+      title.style.color             = p.titleColor
+      icon.textContent              = p.iconText
+      if (noDept) noDept.style.color = p.noDeptColor
+
+      ;['dept-deco-1', 'dept-deco-2', 'dept-deco-3'].forEach(function (id) {
+        var el = document.getElementById(id)
+        if (el) el.style.backgroundColor = p.decoColor
+      })
+
+      if (select) {
+        select.style.backgroundColor = p.inputBg
+        select.style.borderColor     = p.inputBorder
+        select.style.color           = p.inputColor
+      }
+
+      isDark = dark
+
+      // FIX (bug): toggle the Tailwind 'dark' class on <html> so dark: utilities activate
+      document.documentElement.classList.toggle('dark', dark)
+
+      // FIX (warning): keep aria-pressed in sync with actual state
+      if (toggle) toggle.setAttribute('aria-pressed', dark ? 'true' : 'false')
+
+      localStorage.setItem('theme', dark ? 'dark' : 'light')
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
+    }
+
+    window.toggleDeptTheme = function () {
+      var icon = document.getElementById('theme-icon')
+      icon.style.transform = 'rotate(360deg)'
+      setTimeout(function () { icon.style.transform = '' }, 600)
+      applyDeptTheme(!isDark)
+    }
+
+    ;(function initDeptTheme() {
+      var saved    = localStorage.getItem('theme')
+      var prefDark = window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches
+      if (saved === 'dark' || (!saved && prefDark)) applyDeptTheme(true)
+    })()
+
+    /* ─── Department submit loading state ──────────────────────────────── */
+    var deptForm     = document.querySelector('form[aria-label="Department selection form"]')
+    var deptBtn      = document.getElementById('dept-submit-btn')
+    var deptSpinner  = document.getElementById('dept-btn-spinner')
+    var deptSkeleton = document.getElementById('dept-skeleton')
+    // FIX (bug): completed the broken ternary — was missing `: null` (falsy branch),
+    // which caused a JS syntax error that silently killed all code below this line.
+    var deptBtnIcon  = deptBtn ? deptBtn.querySelector('svg[aria-hidden]') : null
+
+    if (deptForm) {
+      deptForm.addEventListener('submit', function () {
+        if (!deptBtn) return
+        deptBtn.disabled = true
+        if (deptSpinner) deptSpinner.classList.remove('hidden')
+        if (deptSkeleton) deptSkeleton.classList.remove('hidden')
+        if (deptBtnIcon)  deptBtnIcon.classList.add('hidden')
+
+        // FIX (warning): use pageshow instead of a blind 10s timer so the button
+        // resets only if the user navigates back, not mid-flight on slow connections.
+        window.addEventListener('pageshow', function onPageShow(e) {
+          if (e.persisted) {
+            deptBtn.disabled = false
+            if (deptSpinner) deptSpinner.classList.add('hidden')
+            if (deptSkeleton) deptSkeleton.classList.add('hidden')
+            if (deptBtnIcon)  deptBtnIcon.classList.remove('hidden')
+          }
+          window.removeEventListener('pageshow', onPageShow)
+        })
+      })
+    }
+
+    /* ─── Ripple on department / logout buttons ─────────────────────────── */
+    document.querySelectorAll('#dept-card button[type=submit], #dept-card button[onclick]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        var rect  = this.getBoundingClientRect()
+        var size  = Math.max(rect.width, rect.height)
+        var r     = document.createElement('span')
+        r.style.cssText = 'position:absolute;border-radius:50%;background:rgba(255,255,255,.25);width:' + size + 'px;height:' + size + 'px;left:' + (e.clientX - rect.left - size / 2) + 'px;top:' + (e.clientY - rect.top - size / 2) + 'px;transform:scale(0);animation:rippleAnim .5s linear forwards;pointer-events:none;z-index:0;'
+        this.appendChild(r)
+        setTimeout(function () { r.remove() }, 600)
+      })
+    })
+  })()
 </script>
 {% endblock %}
