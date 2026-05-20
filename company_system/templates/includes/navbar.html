@@ -52,7 +52,7 @@
       </button>
 
       <!-- Dropdown Menu - with dark mode styles -->
-      <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 rounded-lg shadow-lg py-1" style="z-index: 70; background-color: #374151; color: #e5e7eb;">
+      <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-56 rounded-lg shadow-lg py-1" style="z-index: 70; background-color: #374151; color: #e5e7eb;">
         <!-- User Info Header -->
         <div class="px-4 py-2 border-b" style="border-color: #4b5563;">
           <p class="text-sm font-semibold" style="color: #f9fafb;">
@@ -76,6 +76,173 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>Settings
         </a>
+
+        {# ── Department Switcher ─ visible to Developer, Master, and Owner ── #}
+        {% if is_owner or employee.role|default_if_none:"" %}
+          {% with role_name=employee.role.role_name|default:"" %}
+            {% if is_owner or role_name == "Developer" or role_name == "Master" %}
+
+        <div class="border-t my-1" style="border-color: #4b5563;"></div>
+
+        <!-- ═══════════ DEPARTMENT SWITCHER ═══════════ -->
+        <!-- Hidden form used by the custom department selector -->
+        <form method="post" action="{% url 'select_department' %}"
+              id="nav-dept-switcher-form" style="display:none;">
+          {% csrf_token %}
+          <input type="hidden" name="department" id="nav-dept-hidden-input">
+        </form>
+
+        <!-- Switcher Header -->
+        <div class="px-4 pt-2 pb-1">
+          <div class="flex items-center gap-2 mb-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-4 w-4 flex-shrink-0" style="color: #fb923c;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.884.164-1.8.255-2.75.255a47.85 47.85 0 01-8.5-.41c-2.172-.291-3.913-1.21-5.128-2.632M18.75 14.15a3 3 0 01-3 3H8.25a3 3 0 01-3-3m12 0a3 3 0 01-3 3H8.25a3 3 0 01-3-3" />
+            </svg>
+            <span class="text-xs font-semibold uppercase tracking-wider" style="color: #fb923c;">Department</span>
+          </div>
+
+          <!-- Current department label -->
+          <div class="flex items-center gap-2 flex-wrap mb-1.5 leading-tight">
+            {% if request.session.current_dept %}
+              <span class="text-xs" style="color: #9ca3af;">Viewing:</span>
+              <strong id="nav-dept-role-badge" class="text-xs" style="color: #a78bfa;">{{ request.session.current_dept }}</strong>
+            {% else %}
+              <span class="text-xs" style="color: #9ca3af;">Viewing:</span>
+              <strong id="nav-dept-role-badge" class="text-xs" style="color: #6b7280;">Select department</strong>
+            {% endif %}
+          </div>
+
+          <!-- Custom department picker toggle -->
+          <div class="relative" id="nav-dept-selector-wrapper">
+            <button type="button" id="nav-dept-toggle"
+                    class="flex items-center justify-between w-full px-3 py-1.5 rounded-md text-left text-sm transition-colors"
+                    style="background-color: #4b5563; color: #f9fafb; border: 1px solid #6b7280;"
+                    onclick="toggleNavDeptList(event)"
+                    aria-expanded="false"
+                    aria-haspopup="listbox"
+                    aria-label="Switch department">
+              <span id="nav-dept-current-label"
+                    class="truncate"
+                    style="display:flex; align-items:center; gap:4px;">
+                <span class="w-2 h-2 rounded-full flex-shrink-0" id="nav-dept-indicator" style="background-color: #6b7280;"></span>
+                <span class="truncate">
+                  {% if request.session.current_dept %}
+                    {{ request.session.current_dept }}
+                  {% else %}
+                    Select department
+                  {% endif %}
+                </span>
+              </span>
+              <svg id="nav-dept-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                   class="h-4 w-4 ml-2 flex-shrink-0 transition-transform duration-200" style="color: #9ca3af;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+              </svg>
+            </button>
+
+
+            <!-- Department dropdown list -->
+            <div id="nav-dept-list"
+                 class="hidden absolute left-0 right-0 mt-1 rounded-lg shadow-xl py-1 z-[80] overflow-y-auto max-h-72"
+                 style="background-color: #374151; border: 1px solid #4b5563;"
+                 role="listbox"
+                 aria-label="Available departments">
+
+              <!-- "All / Full Access" option — Owner gets purple Full Access badge,
+                 Developer & Master get a teal Switch Department badge -->
+              <button type="button"
+                      class="dept-option flex items-center justify-between w-full px-3 py-2 text-sm hover:bg-gray-600 transition-colors"
+                      style="color: #e5e7eb;"
+                      data-dept="All"
+                      role="option"
+                      onclick="selectNavDept('All')">
+                <span>
+                  {% if is_owner %}All Departments{% else %}All{% endif %}
+                </span>
+                {% if is_owner %}
+                <span class="text-xs px-1.5 py-0.5 rounded-full flex-shrink-0" style="background-color: #7c3aed; color: #fff;">Full Access</span>
+                {% else %}
+                <span class="text-xs px-1.5 py-0.5 rounded-full flex-shrink-0" style="background-color: #14b8a6; color: #fff;">Switch Dept</span>
+                {% endif %}
+                <span class="nav-dept-check hidden flex-shrink-0" data-selected-for="All">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-4 w-4" style="color: #22c55e;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                </span>
+              </button>
+
+              <!-- Admin -->
+              <button type="button"
+                      class="dept-option flex items-center justify-between w-full px-3 py-2 text-sm hover:bg-gray-600 transition-colors"
+                      style="color: #e5e7eb;"
+                      data-dept="Admin"
+                      data-color="#3b82f6"
+                      role="option"
+                      onclick="selectNavDept('Admin')">
+                <span>Admin</span>
+                <span class="nav-dept-check hidden flex-shrink-0" data-selected-for="Admin">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-4 w-4" style="color: #22c55e;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                </span>
+              </button>
+
+              <!-- Sales -->
+              <button type="button"
+                      class="dept-option flex items-center justify-between w-full px-3 py-2 text-sm hover:bg-gray-600 transition-colors"
+                      style="color: #e5e7eb;"
+                      data-dept="Sales"
+                      data-color="#f97316"
+                      role="option"
+                      onclick="selectNavDept('Sales')">
+                <span>Sales</span>
+                <span class="nav-dept-check hidden flex-shrink-0" data-selected-for="Sales">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-4 w-4" style="color: #22c55e;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                </span>
+              </button>
+
+              <!-- Human Resource -->
+              <button type="button"
+                      class="dept-option flex items-center justify-between w-full px-3 py-2 text-sm hover:bg-gray-600 transition-colors"
+                      style="color: #e5e7eb;"
+                      data-dept="Human Resource"
+                      data-color="#eab308"
+                      role="option"
+                      onclick="selectNavDept('Human Resource')">
+                <span>Human Resource</span>
+                <span class="nav-dept-check hidden flex-shrink-0" data-selected-for="Human Resource">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-4 w-4" style="color: #22c55e;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                </span>
+              </button>
+
+              <!-- Compliance -->
+              <button type="button"
+                      class="dept-option flex items-center justify-between w-full px-3 py-2 text-sm hover:bg-gray-600 transition-colors"
+                      style="color: #e5e7eb;"
+                      data-dept="Compliance"
+                      data-color="#14b8a6"
+                      role="option"
+                      onclick="selectNavDept('Compliance')">
+                <span>Compliance</span>
+                <span class="nav-dept-check hidden flex-shrink-0" data-selected-for="Compliance">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-4 w-4" style="color: #22c55e;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                </span>
+              </button>
+
+            </div>
+          </div>
+        </div>
+        <!-- ═══════════ END DEPARTMENT SWITCHER ═══════════ -->
+
+            {% endif %}
+          {% endwith %}
+        {% endif %}
+
         <div class="border-t my-1" style="border-color: #4b5563;"></div>
         <form method="post" action="{% url 'logout' %}?next=/login/" id="navbar-logout-form">
           {% csrf_token %}
@@ -110,22 +277,22 @@
     if (pageLoader) {
       pageLoader.classList.remove('active')
     }
-  
+
     var themeToggle = document.getElementById('theme-toggle')
     var sunIcon = document.getElementById('sun-icon')
     var moonIcon = document.getElementById('moon-icon')
-  
+
     if (!themeToggle) return
-  
+
     // Check current dark state (set by base.html or localStorage)
     var isDark = document.documentElement.classList.contains('dark')
-  
+
     // If localStorage says light, force remove dark class
     if (localStorage.getItem('theme') === 'light') {
       document.documentElement.classList.remove('dark')
       isDark = false
     }
-  
+
     // Update icon visibility
     function updateThemeIcons() {
       if (sunIcon && moonIcon) {
@@ -133,14 +300,14 @@
         moonIcon.classList.toggle('hidden', isDark)
       }
     }
-  
+
     // Set initial state
     updateThemeIcons()
-  
+
     // Click handler
     themeToggle.onclick = function () {
       isDark = !isDark
-  
+
       if (isDark) {
         document.documentElement.classList.add('dark')
         localStorage.setItem('theme', 'dark')
@@ -151,28 +318,27 @@
       updateThemeIcons()
     }
   }, 50)
-  
+
   // Desktop sidebar toggle button functionality - triggers collapse
   var sidebarToggleDesktop = document.getElementById('sidebarToggleDesktop')
   if (sidebarToggleDesktop) {
     sidebarToggleDesktop.addEventListener('click', function () {
       var sidebar = document.getElementById('sidebar')
       if (!sidebar) return
-  
-      // Check current width to determine collapsed state
+
       var currentWidth = sidebar.style.width
       var isCollapsed = currentWidth === '64px'
-  
+
       var mainContent = document.getElementById('mainContent')
       var header = document.getElementById('mainHeader')
       var toggleText = document.getElementById('toggleText')
       var sidebarTextElements = document.querySelectorAll('.sidebar-text')
-  
+
       if (isCollapsed) {
         // Expand
         sidebar.style.width = '256px'
         if (toggleText) toggleText.textContent = 'Collapse'
-        if (sidebarTextElements) sidebarTextElements.forEach((el) => (el.style.display = ''))
+        if (sidebarTextElements) sidebarTextElements.forEach(function (el) { el.style.display = '' })
         if (mainContent) mainContent.style.marginLeft = '256px'
         if (header) header.style.marginLeft = '256px'
         localStorage.setItem('sidebarCollapsed', 'false')
@@ -180,48 +346,133 @@
         // Collapse
         sidebar.style.width = '64px'
         if (toggleText) toggleText.textContent = ''
-        if (sidebarTextElements) sidebarTextElements.forEach((el) => (el.style.display = 'none'))
+        if (sidebarTextElements) sidebarTextElements.forEach(function (el) { el.style.display = 'none' })
         if (mainContent) mainContent.style.marginLeft = '64px'
         if (header) header.style.marginLeft = '64px'
         localStorage.setItem('sidebarCollapsed', 'true')
       }
     })
   }
-  
-  // User dropdown
-  ;(function () {
+
+  // ─── User dropdown open/close ────────────────────────────────────────────
+  (function () {
     var userMenuBtn = document.getElementById('user-menu-btn')
     var userDropdown = document.getElementById('user-dropdown')
-  
+
     if (userMenuBtn && userDropdown) {
       userMenuBtn.onclick = function (e) {
         e.stopPropagation()
         userDropdown.classList.toggle('hidden')
       }
-  
+
       document.onclick = function (e) {
         if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
           userDropdown.classList.add('hidden')
+          closeNavDeptList()
         }
       }
     }
   })()
-  
-  // Logout modal functions
+
+  // ─── Department Switcher Logic ────────────────────────────────────────────
+  /**
+   * Toggle the department picker list open/closed inside the user dropdown.
+   */
+  function toggleNavDeptList(e) {
+    if (e) e.stopPropagation()
+    var list = document.getElementById('nav-dept-list')
+    var btn  = document.getElementById('nav-dept-toggle')
+    var chev = document.getElementById('nav-dept-chevron')
+    if (!list) return
+
+    var isHidden = list.classList.contains('hidden')
+    if (isHidden) {
+      list.classList.remove('hidden')
+      if (btn)  btn.setAttribute('aria-expanded', 'true')
+      if (chev) chev.style.transform = 'rotate(180deg)'
+      highlightNavDeptCurrent()        // mark active dept when opened
+    } else {
+      closeNavDeptList()
+    }
+  }
+
+  /**
+   * Close the department picker without making a selection.
+   */
+  function closeNavDeptList() {
+    var list = document.getElementById('nav-dept-list')
+    var btn  = document.getElementById('nav-dept-toggle')
+    var chev = document.getElementById('nav-dept-chevron')
+    if (list && !list.classList.contains('hidden')) {
+      list.classList.add('hidden')
+      if (btn)  btn.setAttribute('aria-expanded', 'false')
+      if (chev) chev.style.transform = ''
+    }
+  }
+
+  /**
+   * Highlight the green checkmark on whichever department the user is currently on.
+   */
+  function highlightNavDeptCurrent() {
+    // Hide every checkmark first
+    document.querySelectorAll('.nav-dept-check').forEach(function (el) {
+      el.classList.add('hidden')
+    })
+
+    // Extract current dept name from the label (strip the leading dot indicator)
+    var labelEl = document.getElementById('nav-dept-current-label')
+    var currentDept = ''
+    if (labelEl) {
+      currentDept = labelEl.textContent.trim()
+    }
+    var match = currentDept.match(/^\u2022\s*(.+)$/)   // remove leading bullet if present
+    if (match) currentDept = match[1]
+
+    // Show check on the matching option
+    document.querySelectorAll('.nav-dept-check').forEach(function (check) {
+      if (check.getAttribute('data-selected-for') === currentDept) {
+        check.classList.remove('hidden')
+      }
+    })
+  }
+
+  /**
+   * Submit the department selection via hidden form to select_department view,
+   * which stores the choice in session and redirects to the appropriate dashboard.
+   */
+  function selectNavDept(dept) {
+    var hiddenInput = document.getElementById('nav-dept-hidden-input')
+    if (hiddenInput) hiddenInput.value = dept
+
+    var form = document.getElementById('nav-dept-switcher-form')
+    if (form) form.submit()
+  }
+
+  // Re-highlight the current department each time the user dropdown opens
+  ;(function () {
+    var userMenuBtn = document.getElementById('user-menu-btn')
+    if (userMenuBtn) {
+      userMenuBtn.addEventListener('click', function () {
+        setTimeout(highlightNavDeptCurrent, 0)
+      })
+    }
+  })()
+
+  // ─── Logout modal functions ──────────────────────────────────────────────
   function confirmLogout(formId) {
     document.getElementById('logout-modal').classList.remove('hidden')
     document.getElementById('logout-modal').dataset.formId = formId
   }
-  
+
   function cancelLogout() {
     document.getElementById('logout-modal').classList.add('hidden')
   }
-  
+
   function submitLogout() {
     var formId = document.getElementById('logout-modal').dataset.formId
     document.getElementById(formId).submit()
   }
-  
+
   document.getElementById('logout-modal').onclick = function (e) {
     if (e.target === e.currentTarget) cancelLogout()
   }

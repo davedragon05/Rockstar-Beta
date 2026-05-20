@@ -40,6 +40,22 @@ def master_dashboard(request):
         "is_owner": is_owner,
     }
 
+    # ── Keep session department in sync ──────────────────────────────────────
+    # When a Developer or Master lands on the master dashboard via direct URL
+    # (not via the select_department POST), current_dept may be stale or absent.
+    # Force it to "All" here so the navbar badge and department switcher
+    # always reflect reality.
+    if not is_owner:
+        emp_num = request.session.get('employee_number')
+        if emp_num and emp:
+            role_name = emp.role.role_name if emp.role else ''
+            if role_name in ('Master', 'Developer'):
+                request.session['current_dept'] = 'All'
+                request.session.modified = True
+    else:
+        request.session['current_dept'] = 'All'
+        request.session.modified = True
+
     return render(request, "master/master_dashboard.html", context)
 
 
