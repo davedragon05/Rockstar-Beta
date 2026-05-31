@@ -117,7 +117,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'company_db',        # same name you created in pgAdmin
         'USER': 'postgres',          # default PostgreSQL user
-        'PASSWORD': 'Admin!123',  # password you set during install
+        'PASSWORD': 'Admin@123',  # password you set during install
         'HOST': 'localhost',
         'PORT': '5432',
     }
